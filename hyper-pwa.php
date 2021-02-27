@@ -1,10 +1,11 @@
 <?php
 /*
 Plugin Name: Hyper PWA
-Plugin URI:  https://flexplat.com
-Description: Converts WordPress into Progressive Web Apps style.
+Plugin URI:  https://flexplat.com/hyper-pwa/
+Description: Converts Accelerated Mobile Pages WordPress into Progressive Web Apps style.
 Version:     1.0.0
 Author:      Rickey Gu
+Author URI:  https://flexplat.com
 Text Domain: hyper-pwa
 Domain Path: /languages
 */

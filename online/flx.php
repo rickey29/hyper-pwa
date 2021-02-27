@@ -8,8 +8,12 @@ require_once plugin_dir_path( __FILE__ ) . 'cfg.php';
 
 class HyperPWAFlx
 {
+	private $time_now = 0;
+
+
 	public function __construct()
 	{
+		$this->time_now = time();
 	}
 
 	public function __destruct()
@@ -17,123 +21,84 @@ class HyperPWAFlx
 	}
 
 
-	public function base64_encode(&$data)
-	{
-		if ( is_scalar($data) )
-		{
-			if ( is_string($data) )
-			{
-				$data = strtr(base64_encode($data), '+/=', '-_,');
-			}
-			else
-			{
-				$data = base64_encode(strval($data));
-			}
-		}
-		else
-		{
-			if ( empty($data) )
-			{
-				return;
-			}
-
-			foreach ( $data as $key => $value )
-			{
-				$this->base64_encode($data[$key]);
-			}
-		}
-	}
-
-	public function base64_decode(&$data)
-	{
-		if ( is_scalar($data) )
-		{
-			if ( ( $value = base64_decode(strtr($data, '-_,', '+/='), true) ) !== false )
-			{
-				$data = $value;
-			}
-		}
-		else
-		{
-			if ( empty($data) )
-			{
-				return;
-			}
-
-			foreach ( $data as $key => $value )
-			{
-				$this->base64_decode($data[$key]);
-			}
-		}
-	}
-
-
-	private function curl($url, $request)
-	{
-		$curl = curl_init($url);
-
-		curl_setopt($curl, CURLOPT_HEADER, false);
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($request)));
-		curl_setopt($curl, CURLOPT_POST, true);
-		curl_setopt($curl, CURLOPT_POSTFIELDS, $request);
-		curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
-		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-
-		$response = curl_exec($curl);
-
-		$status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-		if ( $status != 200 ) {
-//			die("Error: call to URL $url failed with status $status, response $response, curl_error " . curl_error($curl) . ", curl_errno " . curl_errno($curl));
-			return;
-		}
-
-		curl_close($curl);
-
-		return $response;
-	}
-
+	/*
+		HYPER_PWA_FLX_SERVER, HYPER_PWA_FLX_SERVER_2 and HYPER_PWA_FLX_SERVER_3 have the same code/service.
+		There are two reasons why I set up three servers, two of them are as the redundant backup:
+			1. If one of these servers is Out Of Service, the users can still get service from the other two ones;
+			2. When I update the software of one server, the users can still get service from the other two ones.
+	*/
 	public function query($routing, $request)
 	{
-		$request = json_encode($request);
-
-		$url = FLX_SERVER . $routing;
-		$response = $this->curl($url, $request);
-		if ( !empty($response) )
+		$cached_data = get_transient( 'hyper_pwa_sw_js' );
+		if ( false !== $cached_data && !empty( $_COOKIE['hyper_pwa_sw_js'] ) )
 		{
-			$response = json_decode($response, true);
+			$response = urldecode( $_COOKIE['hyper_pwa_sw_js'] );
+			$response = json_decode( $response );
+			$response = (array)$response;
 
 			return $response;
 		}
 
 
-		if ( FLX_SERVER2 == FLX_SERVER )
-		{
-			return;
-		}
+		$url = HYPER_PWA_FLX_SERVER . $routing;
+		$response = wp_remote_get( $url, $request );
 
-		$url = FLX_SERVER2 . $routing;
-		$response = $this->curl($url, $request);
-		if ( !empty($response) )
+		$http_code = wp_remote_retrieve_response_code( $response );
+		if ( 200 === $http_code )
 		{
-			$response = json_decode($response, true);
+			set_transient( 'hyper_pwa_sw_js', $response, DAY_IN_SECONDS );
+
+			$response = wp_remote_retrieve_body( $response );
+
+			setcookie('hyper_pwa_sw_js', $response, $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN);
+
+			$response = json_decode( $response, true );
 
 			return $response;
 		}
 
 
-		if ( FLX_SERVER3 == FLX_SERVER2 )
+		if ( HYPER_PWA_FLX_SERVER_2 == HYPER_PWA_FLX_SERVER )
 		{
 			return;
 		}
 
-		$url = FLX_SERVER3 . $routing;
-		$response = $this->curl($url, $request);
-		if ( !empty($response) )
+		$url = HYPER_PWA_FLX_SERVER_2 . $routing;
+		$response = wp_remote_get( $url, $request );
+
+		$http_code = wp_remote_retrieve_response_code( $response );
+		if ( 200 === $http_code )
 		{
-			$response = json_decode($response, true);
+			set_transient( 'hyper_pwa_sw_js', $response, DAY_IN_SECONDS );
+
+			$response = wp_remote_retrieve_body( $response );
+
+			setcookie('hyper_pwa_sw_js', $response, $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN);
+
+			$response = json_decode( $response, true );
+
+			return $response;
+		}
+
+
+		if ( HYPER_PWA_FLX_SERVER_3 == HYPER_PWA_FLX_SERVER_2 )
+		{
+			return;
+		}
+
+		$url = HYPER_PWA_FLX_SERVER_3 . $routing;
+		$response = wp_remote_get( $url, $request );
+
+		$http_code = wp_remote_retrieve_response_code( $response );
+		if ( 200 === $http_code )
+		{
+			set_transient( 'hyper_pwa_sw_js', $response, DAY_IN_SECONDS );
+
+			$response = wp_remote_retrieve_body( $response );
+
+			setcookie('hyper_pwa_sw_js', $response, $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN);
+
+			$response = json_decode( $response, true );
 
 			return $response;
 		}

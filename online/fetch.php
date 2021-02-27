@@ -18,27 +18,38 @@ class HyperPWAFetch
 	}
 
 
+	/*
+		Input:
+			$data = array(
+				'plugin_dir' => $this->plugin_dir -- the directory of this plugin
+			);
+
+		Output:
+			$page -- the PWA Service Workers JavaScript file FlexPlat generated
+	*/
 	public function fetch($data)
 	{
 		$flx = new HyperPWAFlx();
 
-		$request = array(
+		$body = array(
 			'data' => $data
 		);
 
-		$response = $flx->query(FLX_PWA, $request);
+		$request = array(
+			'body' => $body
+		);
+
+		$response = $flx->query(HYPER_PWA_FLX, $request);
 		if ( empty($response) )
 		{
-			return '';
+			return;
 		}
 
-		if ( !isset($response['page']) || !is_string($response['page']) )
+		if ( empty($response['page']) || !is_string($response['page']) )
 		{
-			return '';
+			return;
 		}
 		$page = $response['page'];
-
-		$flx->base64_decode($page);
 
 		return $page;
 	}

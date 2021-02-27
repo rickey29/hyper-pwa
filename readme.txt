@@ -12,10 +12,12 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Converts Accelerated Mobile Pages WordPress into Progressive Web Apps style.
 
 == Description ==
-Hyper PWA plugin converts Accelerated Mobile Pages WordPress into Progressive Web Apps style.
+Hyper PWA plugin converts Accelerated Mobile Pages WordPress into Progressive Web Apps style.  It helps you pass PWA validation testing/audit.
 
 == Highlight ==
-None.
+This plugin is relying on a 3rd party Software as a Service -- FlexPlat: https://flexplat.com to generate PWA Service Workers JavaScript file.  The Terms and Conditions is located: https://flexplat.com/terms-and-conditions/
+
+In detail, to make PWA working, end users will ask your website to provide a Service Workers JavaScript file (in my case, the name of the file is https://yoursite/hyper-pwa-sw.js).  Inside of producing the file within my plugin, my plugin will send necessary parameters (so far, the necessary paramter is "plugin directory", where my plugin is located) to FlexPlat, FlexPlat will build the Service Workers JavaScript file based on these parameters, and return this file to your website.  Then my plugin forwards this file to the end users.
 
 == Open Issue ==
 None.
@@ -68,7 +70,11 @@ I use Google Chrome Lighthouse.  You can Google to find more solution.
 
 == Changelog ==
 
-= 1.0.0 =
+= 0.2.0 =
+(Sat., Feb. 27, 2021)
+* update according to the comments of WordPress Plugin Review Team
+
+= 0.1.0 =
 (Wed., Feb. 21, 2021)
 * primary development
 
