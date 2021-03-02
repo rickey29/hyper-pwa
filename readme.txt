@@ -70,6 +70,10 @@ I use Google Chrome Lighthouse.  You can Google to find more solution.
 
 == Changelog ==
 
+= 0.3.0 =
+(Tue., Mar. 02, 2021)
+* update continued according to the comments of WordPress Plugin Review Team
+
 = 0.2.0 =
 (Sat., Feb. 27, 2021)
 * update according to the comments of WordPress Plugin Review Team

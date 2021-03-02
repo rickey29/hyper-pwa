@@ -8,12 +8,8 @@ require_once plugin_dir_path( __FILE__ ) . 'cfg.php';
 
 class HyperPWAFlx
 {
-	private $time_now = 0;
-
-
 	public function __construct()
 	{
-		$this->time_now = time();
 	}
 
 	public function __destruct()
@@ -29,12 +25,11 @@ class HyperPWAFlx
 	*/
 	public function query($routing, $request)
 	{
-		$cached_data = get_transient( 'hyper_pwa_sw_js' );
-		if ( false !== $cached_data && !empty( $_COOKIE['hyper_pwa_sw_js'] ) )
+		$response = get_transient( 'hyper_pwa_sw_js' );
+		if ( false !== $response )
 		{
-			$response = urldecode( $_COOKIE['hyper_pwa_sw_js'] );
-			$response = json_decode( $response );
-			$response = (array)$response;
+			$response = wp_remote_retrieve_body( $response );
+			$response = json_decode( $response, true );
 
 			return $response;
 		}
@@ -49,9 +44,6 @@ class HyperPWAFlx
 			set_transient( 'hyper_pwa_sw_js', $response, DAY_IN_SECONDS );
 
 			$response = wp_remote_retrieve_body( $response );
-
-			setcookie('hyper_pwa_sw_js', $response, $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN);
-
 			$response = json_decode( $response, true );
 
 			return $response;
@@ -72,9 +64,6 @@ class HyperPWAFlx
 			set_transient( 'hyper_pwa_sw_js', $response, DAY_IN_SECONDS );
 
 			$response = wp_remote_retrieve_body( $response );
-
-			setcookie('hyper_pwa_sw_js', $response, $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN);
-
 			$response = json_decode( $response, true );
 
 			return $response;
@@ -95,9 +84,6 @@ class HyperPWAFlx
 			set_transient( 'hyper_pwa_sw_js', $response, DAY_IN_SECONDS );
 
 			$response = wp_remote_retrieve_body( $response );
-
-			setcookie('hyper_pwa_sw_js', $response, $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN);
-
 			$response = json_decode( $response, true );
 
 			return $response;
