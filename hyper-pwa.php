@@ -3,33 +3,35 @@
 Plugin Name: Hyper PWA
 Plugin URI:  https://flexplat.com/hyper-pwa/
 Description: Converts Accelerated Mobile Pages WordPress into Progressive Web Apps style.
-Version:     1.0.0
+Version:     1.1.0
 Author:      Rickey Gu
 Author URI:  https://flexplat.com
 Text Domain: hyper-pwa
 Domain Path: /languages
 */
 
-if ( !defined('ABSPATH') )
+if ( !defined( 'ABSPATH' ) )
 {
 	exit;
 }
 
 class HyperPWA
 {
+	private $time_now = 0;
+
 	private $home_url = '';
-
-	private $page_url = '';
-	private $plugin_dir_url = '';
-
 	private $home_url_pattern = '';
 
-	private $plugin_dir = '';
+	private $page_url = '';
+
 	private $plugin_dir_path = '';
+	private $plugin_dir_url = '';
+	private $plugin_dir = '';
 
 
 	public function __construct()
 	{
+		$this->time_now = time();
 	}
 
 	public function __destruct()
@@ -40,102 +42,103 @@ class HyperPWA
 	private function init()
 	{
 		$home_url = home_url();
-		$this->home_url = preg_replace('/^https?:\/\//im', 'https://', $home_url);
+		$this->home_url = preg_replace( '/^http:\/\//im', 'https://', $home_url );
+		$this->home_url_pattern = str_replace( array( '/', '.' ), array( '\/', '\.' ), $this->home_url );
 
-		$parts = parse_url($this->home_url);
-		$this->page_url = $parts['scheme'] . '://' . $parts['host'] . add_query_arg(array());
-		$this->plugin_dir_url = plugin_dir_url(__FILE__);
+		$parts = parse_url( $this->home_url );
+		$this->page_url = $parts['scheme'] . '://' . $parts['host'] . add_query_arg( array() );
 
-		$this->home_url_pattern = str_replace(array('/', '.'), array('\/', '\.'), $this->home_url);
-
-		$this->plugin_dir = preg_replace('/^' . $this->home_url_pattern . '(.+)\/$/im', '${1}', $this->plugin_dir_url);
-		$this->plugin_dir_path = plugin_dir_path(__FILE__);
+		$this->plugin_dir_path = plugin_dir_path( __FILE__ );
+		$this->plugin_dir_url = plugin_dir_url( __FILE__ );
+		$this->plugin_dir = preg_replace( '/^' . $this->home_url_pattern . '(.+)\/$/im', '${1}', $this->plugin_dir_url );
 	}
 
 
-	private function echo_sw_js()
+	private function echo_manifest_webmanifest()
 	{
-		require_once $this->plugin_dir_path . 'online/fetch.php';
+		require_once $this->plugin_dir_path . 'flx/flx.php';
 
-		$fetch = new HyperPWAFetch();
+		$flx = new HyperPWAFlx();
 
 		$data = array(
+			'name' => get_bloginfo( 'name' ),
+			'description' => get_bloginfo( 'description' ),
 			'plugin_dir' => $this->plugin_dir
 		);
 
-		$page = $fetch->fetch($data);
-
-		if ( empty($page) )
+		$page = $flx->get_manifest_webmanifest( $this->home_url, $data );
+		if ( empty( $page ) )
 		{
 			return;
 		}
 
-
-		header('Content-Type: application/javascript', true);
+		header( 'Content-Type: application/x-web-app-manifest+json', TRUE );
 		echo $page;
 	}
 
 	private function echo_sw_html()
 	{
-		header('Content-Type: text/html; charset=utf-8', true);
-		echo '<!doctype html>
-<html>
-<head>
-<title>Installing service worker...</title>
-<script type="text/javascript">
-	var swsource = "' . $this->home_url . '/hyper-pwa-sw.js";
-	if ( "serviceWorker" in navigator ) {
-		navigator.serviceWorker.register(swsource).then(function(reg) {
-			console.log("ServiceWorker scope: ", reg.scope);
-		}).catch(function(err) {
-			console.log("ServiceWorker registration failed: ", err);
-		});
-	};
-</script>
-</head>
-<body>
-</body>
-</html>';
+		require_once $this->plugin_dir_path . 'flx/flx.php';
+
+		$flx = new HyperPWAFlx();
+
+		$page = $flx->get_sw_html( $this->home_url );
+		if ( empty( $page ) )
+		{
+			return;
+		}
+
+		header( 'Content-Type: text/html; charset=utf-8', TRUE );
+		echo $page;
 	}
 
-	private function echo_manifest_webmanifest()
+	private function echo_sw_js()
 	{
-		$name = get_bloginfo('name');
-		$description = get_bloginfo('description');
+		require_once $this->plugin_dir_path . 'flx/flx.php';
 
-		header('Content-Type: application/x-web-app-manifest+json', true);
-		echo '{"name":"' . $name . ( !empty($description) ? (' -- ' . $description) : '' ) . '","short_name":"' . $name . '","start_url":"' . $this->home_url . '/","icons":[{"src":".' . $this->plugin_dir . '/manifest/mf-logo-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},{"src":".' . $this->plugin_dir . '/manifest/mf-logo-512.png","sizes":"512x512","type":"image/png"}],"theme_color":"#ffffff","background_color":"#ffffff","display":"standalone"}';
+		$flx = new HyperPWAFlx();
+
+		$data = array(
+			'plugin_dir' => $this->plugin_dir
+		);
+
+		$page = $flx->get_sw_js( $this->home_url, $data );
+		if ( empty( $page ) )
+		{
+			return;
+		}
+
+		header( 'Content-Type: application/javascript', TRUE );
+		echo $page;
 	}
 
 
-	private function transcode_page($page)
+	private function transcode_page( $page )
 	{
-		require_once $this->plugin_dir_path . 'pwa/conversion.php';
+		require_once $this->plugin_dir_path . 'transcoding/transcoding.php';
 
-		$conversion = new HyperPWAConversion();
+		$transcoding = new HyperPWATranscoding();
 
-
-		$page = preg_replace('/^[\s\t]*<style type="[^"]+" id="[^"]+"><\/style>$/im', '', $page);
+		$page = preg_replace( '/^[\s\t]*<style type="[^"]+" id="[^"]+"><\/style>$/im', '', $page );
 
 		$data = array(
 			'plugin_dir_url' => $this->plugin_dir_url
 		);
 
-
-		$page = $conversion->convert($page, $this->home_url, $data);
+		$page = $transcoding->transcode( $page, $this->home_url, $data );
 
 		return $page;
 	}
 
-	private function catch_page_callback($page)
+	private function catch_page_callback( $page )
 	{
-		if ( empty($page) )
+		if ( empty( $page ) )
 		{
 			return;
 		}
 
-		$page2 = $this->transcode_page($page);
-		if ( empty($page2) )
+		$page2 = $this->transcode_page( $page );
+		if ( empty( $page2 ) )
 		{
 			return $page;
 		}
@@ -145,7 +148,7 @@ class HyperPWA
 
 	public function after_setup_theme()
 	{
-		ob_start(array($this, 'catch_page_callback'));
+		ob_start( array( $this, 'catch_page_callback' ) );
 	}
 
 	public function shutdown()
@@ -156,35 +159,63 @@ class HyperPWA
 
 	public function plugins_loaded()
 	{
+		if ( is_embed() || is_feed() )
+		{
+			return;
+		}
+		elseif ( $GLOBALS['pagenow'] === 'admin-ajax.php' || $GLOBALS['pagenow'] === 'wp-activate.php' || $GLOBALS['pagenow'] === 'wp-cron.php' || $GLOBALS['pagenow'] === 'wp-signup.php' )
+		{
+			return;
+		}
+		elseif ( is_admin() )
+		{
+			setcookie( 'hyper_pwa_admin', '1', $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+
+			return;
+		}
+		elseif ( $GLOBALS['pagenow'] === 'wp-login.php' )
+		{
+			setcookie( 'hyper_pwa_admin', '', $this->time_now - 1, COOKIEPATH, COOKIE_DOMAIN );
+
+			return;
+		}
+		elseif ( !empty( $_COOKIE['hyper_pwa_admin'] ) )
+		{
+			setcookie( 'hyper_pwa_admin', '1', $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+
+			return;
+		}
+
+
 		$this->init();
 
 
-		if ( preg_match('/^' . $this->home_url_pattern . '\/hyper-pwa-sw\.js$/im', $this->page_url) )
-		{
-			$this->echo_sw_js();
-
-			exit();
-		}
-		elseif ( preg_match('/^' . $this->home_url_pattern . '\/hyper-pwa-sw\.html$/im', $this->page_url) )
-		{
-			$this->echo_sw_html();
-
-			exit();
-		}
-		elseif ( preg_match('/^' . $this->home_url_pattern . '\/manifest\.webmanifest$/im', $this->page_url) )
+		if ( preg_match( '/^' . $this->home_url_pattern . '\/manifest\.webmanifest$/im', $this->page_url ) )
 		{
 			$this->echo_manifest_webmanifest();
 
 			exit();
 		}
+		elseif ( preg_match( '/^' . $this->home_url_pattern . '\/hyper-pwa-sw\.html$/im', $this->page_url) )
+		{
+			$this->echo_sw_html();
+
+			exit();
+		}
+		elseif ( preg_match( '/^' . $this->home_url_pattern . '\/hyper-pwa-sw\.js$/im', $this->page_url ) )
+		{
+			$this->echo_sw_js();
+
+			exit();
+		}
 
 
-		add_action('after_setup_theme', array($this, 'after_setup_theme'));
-		add_action('shutdown', array($this, 'shutdown'));
+		add_action( 'after_setup_theme', array( $this, 'after_setup_theme' ) );
+		add_action( 'shutdown', array( $this, 'shutdown' ) );
 	}
 }
 
 
 $pwa = new HyperPWA();
 
-add_action('plugins_loaded', array($pwa, 'plugins_loaded'));
+add_action( 'plugins_loaded', array( $pwa, 'plugins_loaded' ) );

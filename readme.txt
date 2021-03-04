@@ -5,7 +5,7 @@ Tags: progressive web apps, pwa, wordpress, wp, plugin, accelerated mobile pages
 Requires at least: 4.7
 Tested up to: 5.6.2
 Requires PHP: 5.2.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,6 +69,10 @@ None.
 I use Google Chrome Lighthouse.  You can Google to find more solution.
 
 == Changelog ==
+
+= 1.1.0 =
+(Thur., Mar. 04, 2021)
+* Update according to WordPress Plugin Handbook.
 
 = 1.0.0 =
 (Tue., Mar. 02, 2021)
