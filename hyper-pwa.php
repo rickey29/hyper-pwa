@@ -2,8 +2,8 @@
 /*
 Plugin Name: Hyper PWA
 Plugin URI:  https://flexplat.com/hyper-pwa/
-Description: Converts Accelerated Mobile Pages WordPress into Progressive Web Apps style.
-Version:     1.1.0
+Description: Converts WordPress into Progressive Web Apps style.
+Version:     1.2.0
 Author:      Rickey Gu
 Author URI:  https://flexplat.com
 Text Domain: hyper-pwa
@@ -54,10 +54,9 @@ class HyperPWA
 	}
 
 
-	private function echo_manifest_webmanifest()
+	private function get_manifest_json()
 	{
 		require_once $this->plugin_dir_path . 'flx/flx.php';
-
 		$flx = new HyperPWAFlx();
 
 		$data = array(
@@ -66,20 +65,32 @@ class HyperPWA
 			'plugin_dir' => $this->plugin_dir
 		);
 
-		$page = $flx->get_manifest_webmanifest( $this->home_url, $data );
+		$page = $flx->get_manifest_json( $this->home_url, $data );
 		if ( empty( $page ) )
 		{
 			return;
 		}
 
-		header( 'Content-Type: application/x-web-app-manifest+json', TRUE );
-		echo $page;
+		return $page;
 	}
 
-	private function echo_sw_html()
+	private function get_offline_html()
 	{
 		require_once $this->plugin_dir_path . 'flx/flx.php';
+		$flx = new HyperPWAFlx();
 
+		$page = $flx->get_offline_html( $this->home_url );
+		if ( empty( $page ) )
+		{
+			return;
+		}
+
+		return $page;
+	}
+
+	private function get_sw_html()
+	{
+		require_once $this->plugin_dir_path . 'flx/flx.php';
 		$flx = new HyperPWAFlx();
 
 		$page = $flx->get_sw_html( $this->home_url );
@@ -88,47 +99,23 @@ class HyperPWA
 			return;
 		}
 
-		header( 'Content-Type: text/html; charset=utf-8', TRUE );
-		echo $page;
+		return $page;
 	}
 
-	private function echo_sw_js()
+	private function get_sw_js()
 	{
 		require_once $this->plugin_dir_path . 'flx/flx.php';
-
 		$flx = new HyperPWAFlx();
 
-		$data = array(
-			'plugin_dir' => $this->plugin_dir
-		);
-
-		$page = $flx->get_sw_js( $this->home_url, $data );
+		$page = $flx->get_sw_js( $this->home_url );
 		if ( empty( $page ) )
 		{
 			return;
 		}
 
-		header( 'Content-Type: application/javascript', TRUE );
-		echo $page;
-	}
-
-
-	private function transcode_page( $page )
-	{
-		require_once $this->plugin_dir_path . 'transcoding/transcoding.php';
-
-		$transcoding = new HyperPWATranscoding();
-
-		$page = preg_replace( '/^[\s\t]*<style type="[^"]+" id="[^"]+"><\/style>$/im', '', $page );
-
-		$data = array(
-			'plugin_dir_url' => $this->plugin_dir_url
-		);
-
-		$page = $transcoding->transcode( $page, $this->home_url, $data );
-
 		return $page;
 	}
+
 
 	private function catch_page_callback( $page )
 	{
@@ -137,13 +124,45 @@ class HyperPWA
 			return;
 		}
 
-		$page2 = $this->transcode_page( $page );
-		if ( empty( $page2 ) )
+
+		$head = '';
+		if ( preg_match( '/<html\b[^>]* amp\b[^>]*>/i', $page ) )
 		{
-			return $page;
+			if ( !preg_match( '/<script async custom-element="amp-install-serviceworker" src="[^"]*"><\/script>/i', $page ) )
+			{
+				$head = '<script async custom-element="amp-install-serviceworker" src="https://cdn.ampproject.org/v0/amp-install-serviceworker-0.1.js"></script>';
+			}
+		}
+		else
+		{
+			$page2 = $this->get_sw_html();
+			if ( preg_match( '/<script\b[^>]*>.+<\/script>/isU', $page2, $matches ) )
+			{
+				$head = $matches[0];
+			}
 		}
 
-		return $page2;
+		if ( !empty( $head ) )
+		{
+			$page = preg_replace( '/(<head\b[^>]*>)/i', '${1}' . "\n" . $head, $page, 1 );
+		}
+
+
+		$head = '<link rel="manifest" href="' . $this->home_url . '/manifest.json" />
+<meta name="theme-color" content="#ffffff" />
+<link rel="apple-touch-icon" href="' . $this->plugin_dir_url . 'manifest/mf-logo-192.png" />';
+
+		$page = preg_replace( '/<\/head>/i', $head . "\n" . '</head>', $page, 1 );
+
+
+		if ( preg_match( '/<html\b[^>]* amp\b[^>]*>/i', $page ) )
+		{
+			$body = '<amp-install-serviceworker src="' . $this->home_url . '/hyper-pwa-sw.js" data-iframe-src="' . $this->home_url . '/hyper-pwa-sw.html" layout="nodisplay"></amp-install-serviceworker>';
+
+			$page = preg_replace( '/<\/body>/i', $body . "\n" . '</body>', $page, 1 );
+		}
+
+		return $page;
 	}
 
 	public function after_setup_theme()
@@ -169,19 +188,19 @@ class HyperPWA
 		}
 		elseif ( is_admin() )
 		{
-			setcookie( 'hyper_pwa_admin', '1', $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+			setcookie( 'hyper-pwa-admin', '1', $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
 
 			return;
 		}
 		elseif ( $GLOBALS['pagenow'] === 'wp-login.php' )
 		{
-			setcookie( 'hyper_pwa_admin', '', $this->time_now - 1, COOKIEPATH, COOKIE_DOMAIN );
+			setcookie( 'hyper-pwa-admin', '', $this->time_now - 1, COOKIEPATH, COOKIE_DOMAIN );
 
 			return;
 		}
-		elseif ( !empty( $_COOKIE['hyper_pwa_admin'] ) )
+		elseif ( !empty( $_COOKIE['hyper-pwa-admin'] ) )
 		{
-			setcookie( 'hyper_pwa_admin', '1', $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+			setcookie( 'hyper-pwa-admin', '1', $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
 
 			return;
 		}
@@ -190,21 +209,55 @@ class HyperPWA
 		$this->init();
 
 
-		if ( preg_match( '/^' . $this->home_url_pattern . '\/manifest\.webmanifest$/im', $this->page_url ) )
+		if ( preg_match( '/^' . $this->home_url_pattern . '\/manifest\.json$/im', $this->page_url ) )
 		{
-			$this->echo_manifest_webmanifest();
+			$page = $this->get_manifest_json();
+			if ( empty( $page ) )
+			{
+				exit();
+			}
+
+			header( 'Content-Type: application/x-web-app-manifest+json', TRUE );
+			echo $page;
+
+			exit();
+		}
+		elseif ( preg_match( '/^' . $this->home_url_pattern . '\/offline\.html$/im', $this->page_url) )
+		{
+			$page = $this->get_offline_html();
+			if ( empty( $page ) )
+			{
+				exit();
+			}
+
+			header( 'Content-Type: text/html; charset=utf-8', TRUE );
+			echo $page;
 
 			exit();
 		}
 		elseif ( preg_match( '/^' . $this->home_url_pattern . '\/hyper-pwa-sw\.html$/im', $this->page_url) )
 		{
-			$this->echo_sw_html();
+			$page = $this->get_sw_html();
+			if ( empty( $page ) )
+			{
+				exit();
+			}
+
+			header( 'Content-Type: text/html; charset=utf-8', TRUE );
+			echo $page;
 
 			exit();
 		}
 		elseif ( preg_match( '/^' . $this->home_url_pattern . '\/hyper-pwa-sw\.js$/im', $this->page_url ) )
 		{
-			$this->echo_sw_js();
+			$page = $this->get_sw_js();
+			if ( empty( $page ) )
+			{
+				exit();
+			}
+
+			header( 'Content-Type: application/javascript', TRUE );
+			echo $page;
 
 			exit();
 		}

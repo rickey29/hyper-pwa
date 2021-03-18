@@ -1,52 +1,37 @@
 === Hyper PWA ===
 Contributors: rickey29
 Donate link: https://flexplat.com
-Tags: progressive web apps, pwa, wordpress, wp, plugin, accelerated mobile pages, amp, performance, speed up, pwamp
-Requires at least: 4.7
-Tested up to: 5.6.2
-Requires PHP: 5.2.4
-Stable tag: 1.1.0
+Tags: progressive web apps, pwa, wordpress, wp, plugin, manifest, web manifest, web app, offline support, add to homescreen, accelerated mobile pages, amp, pwamp, performance, speed up, service worker, service workers, workbox
+Requires at least: 5.1
+Tested up to: 5.7
+Requires PHP: 7.2
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Converts Accelerated Mobile Pages WordPress into Progressive Web Apps style.
+Converts WordPress into Progressive Web Apps style.
 
 == Description ==
-Hyper PWA plugin converts Accelerated Mobile Pages WordPress into Progressive Web Apps style.  It helps you pass PWA validation testing/audit.
+Hyper PWA plugin converts WordPress into Progressive Web Apps style.  It helps your website
+
+* Pass Lighthouse PWA audit;
+* Work compatible with AMP;
+* Display an Offline Page when network is not available;
+* Bypass WordPress Administration Dashboard for PWA.
 
 == Highlight ==
-This plugin is relying on a 3rd party Software as a Service -- FlexPlat: https://flexplat.com to generate PWA Service Workers JavaScript file.  The Terms and Conditions is located: https://flexplat.com/terms-and-conditions/
+This plugin is relying on a 3rd party Software as a Service -- FlexPlat: https://flexplat.com to generate PWA Service Workers related files.  The Terms and Conditions is located at: https://flexplat.com/terms-and-conditions/
 
-In detail, to make PWA working, end users will ask your website to provide a Service Workers JavaScript file (in my case, the name of the file is https://yoursite/hyper-pwa-sw.js).  Inside of producing the file within my plugin, my plugin will send necessary parameters (so far, the necessary paramter is "plugin directory", where my plugin is located) to FlexPlat, FlexPlat will build the Service Workers JavaScript file based on these parameters, and return this file to your website.  Then my plugin forwards this file to the end users.
+In detail, to make PWA working, end users will ask your website to provide Service Workers related files: manifest.json, hyper-pwa-sw.js, hyper-pwa-sw.html and offline.html.  Inside of producing these files within my plugin, my plugin will send necessary parameters to FlexPlat, FlexPlat will build the Service Workers related files based on the received parameters, and return these files to your website.  Then my plugin forwards these files to end users.
 
 == Open Issue ==
 None.
 
 == Demo ==
-1. https://apparel.flexplat.com/
-2. https://boat-rental.flexplat.com/
-3. https://book-shop.flexplat.com/
-4. https://digital-store.flexplat.com/
-5. https://electronics-shop.flexplat.com/
-6. https://jewellery-shop-2.flexplat.com/
-7. https://perfume-shop.flexplat.com/
-8. https://pet-shop.flexplat.com/
-9. https://restaurant.flexplat.com/
-10. https://restaurant-2.flexplat.com/
-11. https://shop.flexplat.com/
+1. https://flexplat.com
 
 == Screenshots ==
-1. https://download.flexplat.com/apparel.png
-2. https://download.flexplat.com/boat-rental.png
-3. https://download.flexplat.com/book-shop.png
-4. https://download.flexplat.com/digital-store.png
-5. https://download.flexplat.com/electronics-shop.png
-6. https://download.flexplat.com/jewellery-shop-2.png
-7. https://download.flexplat.com/perfume-shop.png
-8. https://download.flexplat.com/pet-shop.png
-9. https://download.flexplat.com/restaurant.png
-10. https://download.flexplat.com/restaurant-2.png
-11. https://download.flexplat.com/shop.png
+1. https://download.flexplat.com/flexplat.png
 
 == Download ==
 1. GitHub: https://github.com/rickey29/hyper-pwa-wordpress
@@ -64,11 +49,18 @@ None.
 
 == Frequently Asked Questions ==
 
-= How to audit my website PWA validation status? =
+= How to validate my website PWA status? =
 
-I use Google Chrome Lighthouse.  You can Google to find more solution.
+I use Google Chrome Lighthouse PWA audit.  You can Google to find more solutions.
 
 == Changelog ==
+
+= 1.2.0 =
+(Thur., Mar. 18, 2021)
+* Pass Lighthouse PWA audit.
+* Work compatible with AMP.
+* Display an Offline Page when network is not available.
+* Bypass WordPress Administration Dashboard for PWA.
 
 = 1.1.0 =
 (Thur., Mar. 04, 2021)

@@ -17,7 +17,26 @@ class HyperPWAFlx
 	}
 
 
-	private function query( $transient, $routing, $request )
+	private function query( $url, $request, $transient )
+	{
+		$url = esc_url( $url );
+		$response = wp_remote_get( $url, $request );
+
+		$http_code = wp_remote_retrieve_response_code( $response );
+		if ( 200 !== $http_code )
+		{
+			return;
+		}
+
+		set_transient( $transient, $response, DAY_IN_SECONDS );
+
+		$response = wp_remote_retrieve_body( $response );
+		$response = json_decode( $response, TRUE );
+
+		return $response;
+	}
+
+	private function query_flx( $transient, $routing, $request )
 	{
 		$response = get_transient( $transient );
 		if ( FALSE !== $response )
@@ -30,17 +49,9 @@ class HyperPWAFlx
 
 
 		$url = HYPER_PWA_FLX_SERVER_1 . $routing;
-		$url = esc_url( $url );
-		$response = wp_remote_get( $url, $request );
-
-		$http_code = wp_remote_retrieve_response_code( $response );
-		if ( 200 === $http_code )
+		$response = $this->query( $url, $request, $transient );
+		if ( !empty( $response ) )
 		{
-			set_transient( $transient, $response, DAY_IN_SECONDS );
-
-			$response = wp_remote_retrieve_body( $response );
-			$response = json_decode( $response, TRUE );
-
 			return $response;
 		}
 
@@ -51,17 +62,9 @@ class HyperPWAFlx
 		}
 
 		$url = HYPER_PWA_FLX_SERVER_2 . $routing;
-		$url = esc_url( $url );
-		$response = wp_remote_get( $url, $request );
-
-		$http_code = wp_remote_retrieve_response_code( $response );
-		if ( 200 === $http_code )
+		$response = $this->query( $url, $request, $transient );
+		if ( !empty( $response ) )
 		{
-			set_transient( $transient, $response, DAY_IN_SECONDS );
-
-			$response = wp_remote_retrieve_body( $response );
-			$response = json_decode( $response, TRUE );
-
 			return $response;
 		}
 
@@ -72,31 +75,17 @@ class HyperPWAFlx
 		}
 
 		$url = HYPER_PWA_FLX_SERVER_3 . $routing;
-		$url = esc_url( $url );
-		$response = wp_remote_get( $url, $request );
-
-		$http_code = wp_remote_retrieve_response_code( $response );
-		if ( 200 === $http_code )
+		$response = $this->query( $url, $request, $transient );
+		if ( !empty( $response ) )
 		{
-			set_transient( $transient, $response, DAY_IN_SECONDS );
-
-			$response = wp_remote_retrieve_body( $response );
-			$response = json_decode( $response, TRUE );
-
 			return $response;
 		}
 
 		return;
 	}
 
-
-	public function get_manifest_webmanifest( $home_url, $data )
+	private function get( $body, $home_url, $transient, $routing )
 	{
-		$body = array(
-			'home_url' => $home_url,
-			'data' => $data
-		);
-
 		$request = array(
 			'body' => $body
 		);
@@ -106,7 +95,7 @@ class HyperPWAFlx
 			$request = array_merge( $request, array( 'sslverify' => FALSE ) );
 		}
 
-		$response = $this->query( 'manifest_webmanifest', HYPER_PWA_FLX_MANIFEST_WEBMANIFEST, $request );
+		$response = $this->query_flx( $transient, $routing, $request );
 		if ( empty( $response ) )
 		{
 			return;
@@ -117,6 +106,30 @@ class HyperPWAFlx
 			return;
 		}
 		$page = $response['page'];
+
+		return $page;
+	}
+
+
+	public function get_manifest_json( $home_url, $data )
+	{
+		$body = array(
+			'home_url' => $home_url,
+			'data' => $data
+		);
+
+		$page = $this->get( $body, $home_url, 'hyper-pwa-manifest-json', HYPER_PWA_FLX_MANIFEST_JSON );
+
+		return $page;
+	}
+
+	public function get_offline_html( $home_url )
+	{
+		$body = array(
+			'home_url' => $home_url
+		);
+
+		$page = $this->get( $body, $home_url, 'hyper-pwa-offline-html', HYPER_PWA_FLX_OFFLINE_HTML );
 
 		return $page;
 	}
@@ -127,57 +140,18 @@ class HyperPWAFlx
 			'home_url' => $home_url
 		);
 
-		$request = array(
-			'body' => $body
-		);
-
-		if ( preg_match( '/^https:\/\/127\.0\.0\.1\//im', $home_url ) )
-		{
-			$request = array_merge( $request, array( 'sslverify' => FALSE ) );
-		}
-
-		$response = $this->query( 'hyper_pwa_sw_html', HYPER_PWA_FLX_SW_HTML, $request );
-		if ( empty( $response ) )
-		{
-			return;
-		}
-
-		if ( empty( $response['page'] ) || !is_string( $response['page'] ) )
-		{
-			return;
-		}
-		$page = $response['page'];
+		$page = $this->get( $body, $home_url, 'hyper-pwa-sw-html', HYPER_PWA_FLX_SW_HTML );
 
 		return $page;
 	}
 
-	public function get_sw_js( $home_url, $data )
+	public function get_sw_js( $home_url )
 	{
 		$body = array(
-			'home_url' => $home_url,
-			'data' => $data
+			'home_url' => $home_url
 		);
 
-		$request = array(
-			'body' => $body
-		);
-
-		if ( preg_match( '/^https:\/\/127\.0\.0\.1\//im', $home_url ) )
-		{
-			$request = array_merge( $request, array( 'sslverify' => FALSE ) );
-		}
-
-		$response = $this->query( 'hyper_pwa_sw_js', HYPER_PWA_FLX_SW_JS, $request );
-		if ( empty( $response ) )
-		{
-			return;
-		}
-
-		if ( empty( $response['page'] ) || !is_string( $response['page'] ) )
-		{
-			return;
-		}
-		$page = $response['page'];
+		$page = $this->get( $body, $home_url, 'hyper-pwa-sw-js', HYPER_PWA_FLX_SW_JS );
 
 		return $page;
 	}
