@@ -5,7 +5,7 @@ Tags: progressive web apps, pwa, wordpress, wp, plugin, manifest, web manifest, 
 Requires at least: 5.1
 Tested up to: 5.7
 Requires PHP: 7.2
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,16 +13,20 @@ Converts WordPress into Progressive Web Apps style.
 
 == Description ==
 Hyper PWA plugin converts WordPress into Progressive Web Apps style.  It helps your website
-
 * Pass Lighthouse PWA audit;
 * Work compatible with AMP;
-* Display an Offline Page when network is not available;
+* Display an offline page when network is not available;
 * Bypass WordPress Administration Dashboard for PWA.
 
 == Highlight ==
 This plugin is relying on a 3rd party Software as a Service -- FlexPlat: https://flexplat.com to generate PWA Service Workers related files.  The Terms and Conditions is located at: https://flexplat.com/terms-and-conditions/
 
-In detail, to make PWA working, end users will ask your website to provide Service Workers related files: manifest.json, hyper-pwa-sw.js, hyper-pwa-sw.html and offline.html.  Inside of producing these files within my plugin, my plugin will send necessary parameters to FlexPlat, FlexPlat will build the Service Workers related files based on the received parameters, and return these files to your website.  Then my plugin forwards these files to end users.
+In detail, to make PWA working, end users will ask your website to provide Service Workers related files:
+* hyper-pwa-manifest.json
+* hyper-pwa-sw.js
+* hyper-pwa-sw.html
+* hyper-pwa-offline.html
+Inside of producing these files within my plugin, my plugin will send necessary parameters to FlexPlat, FlexPlat will build the Service Workers related files based on the received parameters, and return these files to your website.  Then my plugin forwards these files to end users.
 
 == Open Issue ==
 None.
@@ -55,6 +59,10 @@ I use Google Chrome Lighthouse PWA audit.  You can Google to find more solutions
 
 == Changelog ==
 
+= 1.3.0 =
+(Tue., Mar. 30, 2021)
+* Provide plugin Settings Page.
+
 = 1.2.0 =
 (Thur., Mar. 18, 2021)
 * Pass Lighthouse PWA audit.
@@ -86,4 +94,3 @@ I use Google Chrome Lighthouse PWA audit.  You can Google to find more solutions
 Author: Rickey Gu
 Web: https://flexplat.com
 Email: rickey29@gmail.com
-Twitter: @rickey29
