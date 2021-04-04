@@ -30,7 +30,7 @@ class HyperPWAAdmin
 <?php
 		if ( !empty( $_GET['settings-updated'] ) )
 		{
-			delete_transient( 'hyper-pwa-manifest-json' );
+			delete_transient( HYPER_PWA_MANIFEST_JSON );
 ?>
 	<div class="notice notice-success is-dismissible">
 		<p>Your settings have been updated!</p>
@@ -75,14 +75,14 @@ class HyperPWAAdmin
 	{
 		switch( $arguments['id'] )
 		{
-			case 'hyper_pwa_section':
+			case HYPER_PWA_SECTION:
 				break;
 		}
 	}
 
 	public function setup_section()
 	{
-		add_settings_section( 'hyper_pwa_section', '', array( $this, 'section_callback' ), HYPER_PWA_SLUG );
+		add_settings_section( HYPER_PWA_SECTION, '', array( $this, 'section_callback' ), HYPER_PWA_SLUG );
 	}
 
 
@@ -161,7 +161,7 @@ class HyperPWAAdmin
 			array(
 				'uid' => HYPER_PWA_APP_ICON,
 				'label' => 'App Icon',
-				'section' => 'hyper_pwa_section',
+				'section' => HYPER_PWA_SECTION,
 				'type' => 'mediauploader',
 				'placeholder' => 'App Icon',
 				'helper' => '',
@@ -171,7 +171,7 @@ class HyperPWAAdmin
 			array(
 				'uid' => HYPER_PWA_SPLASH_SCREEN_ICON,
 				'label' => 'Splash Screen Icon',
-				'section' => 'hyper_pwa_section',
+				'section' => HYPER_PWA_SECTION,
 				'type' => 'mediauploader',
 				'placeholder' => 'Splash Screen Icon',
 				'helper' => '',

@@ -8,10 +8,6 @@ class HyperPWAInc
 {
 	private $hyper_pwa = NULL;
 
-	private $home_url = '';
-
-	private $plugin_dir_url = '';
-
 
 	public function __construct( $hyper_pwa )
 	{
@@ -23,19 +19,15 @@ class HyperPWAInc
 	}
 
 
-	public function init( $home_url, $data )
+	public function add_service_worker( $page, $data )
 	{
-		$this->home_url = $home_url;
-
-		if ( !empty( $data['plugin_dir_url'] ) && is_string( $data['plugin_dir_url'] ) )
+		$manifest_logo_192_url = '';
+		if ( !empty( $data['manifest_logo_192_url'] ) && is_string( $data['manifest_logo_192_url'] ) )
 		{
-			$this->plugin_dir_url = $data['plugin_dir_url'];
+			$manifest_logo_192_url = $data['manifest_logo_192_url'];
 		}
-	}
 
 
-	public function update( $page )
-	{
 		$head = '';
 		if ( preg_match( '/<html\b[^>]* amp\b[^>]*>/i', $page ) )
 		{
@@ -46,7 +38,7 @@ class HyperPWAInc
 		}
 		else
 		{
-			$page2 = $this->hyper_pwa->get_sw_html();
+			$page2 = $this->hyper_pwa->get_service_worker_html();
 			if ( preg_match( '/<script\b[^>]*>.+<\/script>/isU', $page2, $matches ) )
 			{
 				$head = $matches[0];
@@ -63,9 +55,10 @@ class HyperPWAInc
 		$page = preg_replace( '/<meta\b[^>]* name=(("theme-color")|(\'theme-color\'))[^>]*\s*?\/?>/iU', '', $page );
 		$page = preg_replace( '/<link\b[^>]* rel=(("apple-touch-icon")|(\'apple-touch-icon\'))[^>]*\s*?\/?>/iU', '', $page );
 
-		$head = '<link rel="manifest" href="' . $this->home_url . '/hyper-pwa-manifest.json" />
+		$head = '
+<link rel="manifest" href="/hyper-pwa-manifest.json" />
 <meta name="theme-color" content="#ffffff" />
-<link rel="apple-touch-icon" href="' . $this->plugin_dir_url . 'manifest/logo-192.png" />';
+<link rel="apple-touch-icon" href="' . $manifest_logo_192_url . '" />';
 
 		$page = preg_replace( '/<\/head>/i', $head . "\n" . '</head>', $page, 1 );
 
@@ -74,9 +67,27 @@ class HyperPWAInc
 		{
 			$page = preg_replace( '/<amp-install-serviceworker\b[^>]+><\/amp-install-serviceworker>/i', '', $page );
 
-			$body = '<amp-install-serviceworker src="' . $this->home_url . '/hyper-pwa-sw.js" data-iframe-src="' . $this->home_url . '/hyper-pwa-sw.html" layout="nodisplay"></amp-install-serviceworker>';
+			$body = '<amp-install-serviceworker src="/hyper-pwa-service-worker.js" data-iframe-src="/hyper-pwa-service-worker.html" layout="nodisplay"></amp-install-serviceworker>';
 
 			$page = preg_replace( '/<\/body>/i', $body . "\n" . '</body>', $page, 1 );
+		}
+
+		return $page;
+	}
+
+	public function add_service_worker_unregister( $page )
+	{
+		$head = '';
+
+		$page2 = $this->hyper_pwa->get_service_worker_unregister_html();
+		if ( preg_match( '/<script\b[^>]*>.+<\/script>/isU', $page2, $matches ) )
+		{
+			$head = $matches[0];
+		}
+
+		if ( !empty( $head ) )
+		{
+			$page = preg_replace( '/(<head\b[^>]*>)/i', '${1}' . "\n" . $head, $page, 1 );
 		}
 
 		return $page;

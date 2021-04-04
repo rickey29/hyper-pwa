@@ -3,7 +3,7 @@
 Plugin Name: Hyper PWA
 Plugin URI:  https://flexplat.com/hyper-pwa/
 Description: Converts WordPress into Progressive Web Apps style.
-Version:     1.3.0
+Version:     1.4.0
 Author:      Rickey Gu
 Author URI:  https://flexplat.com
 License:     GPL-2.0+
@@ -66,23 +66,23 @@ class HyperPWA
 		$flx = new HyperPWAFlx();
 
 		$manifest_logo_192_url = get_option( HYPER_PWA_APP_ICON );
-		if ( !empty($manifest_logo_192_url ) )
+		if ( !empty( $manifest_logo_192_url ) )
 		{
-			$manifest_logo_192_url = preg_replace( '/^' . $this->home_url_pattern . '(.+)$/im', '.${1}', $manifest_logo_192_url );
+			$manifest_logo_192_url = preg_replace( '/^' . $this->home_url_pattern . '(.+)$/im', '${1}', $manifest_logo_192_url );
 		}
 		else
 		{
-			$manifest_logo_192_url = '.' . $this->plugin_dir . '/manifest/logo-192.png';
+			$manifest_logo_192_url = $this->plugin_dir . '/manifest/logo-192.png';
 		}
 
 		$manifest_logo_512_url = get_option( HYPER_PWA_SPLASH_SCREEN_ICON );
-		if ( !empty($manifest_logo_512_url ) )
+		if ( !empty( $manifest_logo_512_url ) )
 		{
-			$manifest_logo_512_url = preg_replace( '/^' . $this->home_url_pattern . '(.+)$/im', '.${1}', $manifest_logo_512_url );
+			$manifest_logo_512_url = preg_replace( '/^' . $this->home_url_pattern . '(.+)$/im', '${1}', $manifest_logo_512_url );
 		}
 		else
 		{
-			$manifest_logo_512_url = '.' . $this->plugin_dir . '/manifest/logo-512.png';
+			$manifest_logo_512_url = $this->plugin_dir . '/manifest/logo-512.png';
 		}
 
 		$data = array(
@@ -115,12 +115,12 @@ class HyperPWA
 		return $page;
 	}
 
-	public function get_sw_html()
+	public function get_service_worker_html()
 	{
 		require_once $this->plugin_dir_path . 'flx/flx.php';
 		$flx = new HyperPWAFlx();
 
-		$page = $flx->get_sw_html( $this->home_url );
+		$page = $flx->get_service_worker_html( $this->home_url );
 		if ( empty( $page ) )
 		{
 			return;
@@ -129,12 +129,26 @@ class HyperPWA
 		return $page;
 	}
 
-	private function get_sw_js()
+	private function get_service_worker_js()
 	{
 		require_once $this->plugin_dir_path . 'flx/flx.php';
 		$flx = new HyperPWAFlx();
 
-		$page = $flx->get_sw_js( $this->home_url );
+		$page = $flx->get_service_worker_js( $this->home_url );
+		if ( empty( $page ) )
+		{
+			return;
+		}
+
+		return $page;
+	}
+
+	public function get_service_worker_unregister_html()
+	{
+		require_once $this->plugin_dir_path . 'flx/flx.php';
+		$flx = new HyperPWAFlx();
+
+		$page = $flx->get_service_worker_unregister_html( $this->home_url );
 		if ( empty( $page ) )
 		{
 			return;
@@ -144,29 +158,50 @@ class HyperPWA
 	}
 
 
-	private function update_html( $page )
+	private function service_worker_callback( $page )
 	{
+		if ( empty( $page ) )
+		{
+			return;
+		}
+
 		require_once $this->plugin_dir_path . 'inc/inc.php';
 		$inc = new HyperPWAInc( $this );
 
+		$manifest_logo_192_url = get_option( HYPER_PWA_APP_ICON );
+		if ( !empty( $manifest_logo_192_url ) )
+		{
+			$manifest_logo_192_url = preg_replace( '/^' . $this->home_url_pattern . '(.+)$/im', '${1}', $manifest_logo_192_url );
+		}
+		else
+		{
+			$manifest_logo_192_url = $this->plugin_dir . '/manifest/logo-192.png';
+		}
+
 		$data = array(
-			'plugin_dir_url' => $this->plugin_dir_url
+			'manifest_logo_192_url' => $manifest_logo_192_url
 		);
 
-		$inc->init( $this->home_url, $data );
-		$page = $inc->update( $page );
+		$page2 = $inc->add_service_worker( $page, $data );
+		if ( empty( $page2 ) )
+		{
+			return $page;
+		}
 
-		return $page;
+		return $page2;
 	}
 
-	private function catch_page_callback( $page )
+	private function service_worker_unregister_callback( $page )
 	{
 		if ( empty( $page ) )
 		{
 			return;
 		}
 
-		$page2 = $this->update_html( $page );
+		require_once $this->plugin_dir_path . 'inc/inc.php';
+		$inc = new HyperPWAInc( $this );
+
+		$page2 = $inc->add_service_worker_unregister( $page );
 		if ( empty( $page2 ) )
 		{
 			return $page;
@@ -177,7 +212,14 @@ class HyperPWA
 
 	public function after_setup_theme()
 	{
-		ob_start( array( $this, 'catch_page_callback' ) );
+		if ( empty( $_COOKIE[HYPER_PWA_ADMIN] ) )
+		{
+			ob_start( array( $this, 'service_worker_callback' ) );
+		}
+		else
+		{
+			ob_start( array( $this, 'service_worker_unregister_callback' ) );
+		}
 	}
 
 	public function shutdown()
@@ -216,9 +258,9 @@ class HyperPWA
 
 			exit();
 		}
-		elseif ( preg_match( '/^' . $this->home_url_pattern . '\/hyper-pwa-sw\.html$/im', $this->page_url) )
+		elseif ( preg_match( '/^' . $this->home_url_pattern . '\/hyper-pwa-service-worker\.html$/im', $this->page_url) )
 		{
-			$page = $this->get_sw_html();
+			$page = $this->get_service_worker_html();
 			if ( empty( $page ) )
 			{
 				exit();
@@ -229,15 +271,28 @@ class HyperPWA
 
 			exit();
 		}
-		elseif ( preg_match( '/^' . $this->home_url_pattern . '\/hyper-pwa-sw\.js$/im', $this->page_url ) )
+		elseif ( preg_match( '/^' . $this->home_url_pattern . '\/hyper-pwa-service-worker\.js$/im', $this->page_url ) )
 		{
-			$page = $this->get_sw_js();
+			$page = $this->get_service_worker_js();
 			if ( empty( $page ) )
 			{
 				exit();
 			}
 
 			header( 'Content-Type: application/javascript', TRUE );
+			echo $page;
+
+			exit();
+		}
+		elseif ( preg_match( '/^' . $this->home_url_pattern . '\/hyper-pwa-service-worker-unregister\.html$/im', $this->page_url) )
+		{
+			$page = $this->get_service_worker_unregister_html();
+			if ( empty( $page ) )
+			{
+				exit();
+			}
+
+			header( 'Content-Type: text/html; charset=utf-8', TRUE );
 			echo $page;
 
 			exit();
@@ -252,27 +307,40 @@ class HyperPWA
 		{
 			return;
 		}
-		elseif ( is_admin() )
-		{
-			setcookie( 'hyper-pwa-admin', '1', $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
-
-			return;
-		}
 		elseif ( $GLOBALS['pagenow'] === 'wp-login.php' )
 		{
-			setcookie( 'hyper-pwa-admin', '', $this->time_now - 1, COOKIEPATH, COOKIE_DOMAIN );
+			setcookie( HYPER_PWA_ADMIN, '', $this->time_now - 1, COOKIEPATH, COOKIE_DOMAIN );
 
 			return;
 		}
-		elseif ( !empty( $_COOKIE['hyper-pwa-admin'] ) )
+		elseif ( is_admin() )
 		{
-			setcookie( 'hyper-pwa-admin', '1', $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
-
-			return;
+			setcookie( HYPER_PWA_ADMIN, '1', $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+		}
+		elseif ( !empty( $_COOKIE[HYPER_PWA_ADMIN] ) )
+		{
+			setcookie( HYPER_PWA_ADMIN, '1', $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
 		}
 
 		add_action( 'after_setup_theme', array( $this, 'after_setup_theme' ) );
 		add_action( 'shutdown', array( $this, 'shutdown' ) );
+	}
+
+
+	public function register_activation()
+	{
+		setcookie( HYPER_PWA_ADMIN, '1', $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+	}
+
+	public function register_deactivation()
+	{
+		setcookie( HYPER_PWA_ADMIN, '', $this->time_now - 1, COOKIEPATH, COOKIE_DOMAIN );
+
+		delete_transient( HYPER_PWA_MANIFEST_JSON );
+		delete_transient( HYPER_PWA_OFFLINE_HTML );
+		delete_transient( HYPER_PWA_SERVICE_WORKER_HTML );
+		delete_transient( HYPER_PWA_SERVICE_WORKER_JS );
+		delete_transient( HYPER_PWA_SERVICE_WORKER_UNREGISTER_HTML );
 	}
 }
 
@@ -280,3 +348,6 @@ class HyperPWA
 $hyper_pwa = new HyperPWA();
 
 add_action( 'plugins_loaded', array( $hyper_pwa, 'plugins_loaded' ) );
+
+register_activation_hook( __FILE__, array( $hyper_pwa, 'register_activation' ) );
+register_deactivation_hook( __FILE__, array( $hyper_pwa, 'register_deactivation' ) );

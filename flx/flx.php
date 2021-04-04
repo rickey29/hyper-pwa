@@ -118,7 +118,7 @@ class HyperPWAFlx
 			'data' => $data
 		);
 
-		$page = $this->get( $body, $home_url, 'hyper-pwa-manifest-json', HYPER_PWA_FLX_MANIFEST_JSON );
+		$page = $this->get( $body, $home_url, HYPER_PWA_MANIFEST_JSON, HYPER_PWA_FLX_MANIFEST_JSON );
 
 		return $page;
 	}
@@ -129,29 +129,40 @@ class HyperPWAFlx
 			'home_url' => $home_url
 		);
 
-		$page = $this->get( $body, $home_url, 'hyper-pwa-offline-html', HYPER_PWA_FLX_OFFLINE_HTML );
+		$page = $this->get( $body, $home_url, HYPER_PWA_OFFLINE_HTML, HYPER_PWA_FLX_OFFLINE_HTML );
 
 		return $page;
 	}
 
-	public function get_sw_html( $home_url )
+	public function get_service_worker_html( $home_url )
 	{
 		$body = array(
 			'home_url' => $home_url
 		);
 
-		$page = $this->get( $body, $home_url, 'hyper-pwa-sw-html', HYPER_PWA_FLX_SW_HTML );
+		$page = $this->get( $body, $home_url, HYPER_PWA_SERVICE_WORKER_HTML, HYPER_PWA_FLX_SERVICE_WORKER_HTML );
 
 		return $page;
 	}
 
-	public function get_sw_js( $home_url )
+	public function get_service_worker_js( $home_url )
 	{
 		$body = array(
 			'home_url' => $home_url
 		);
 
-		$page = $this->get( $body, $home_url, 'hyper-pwa-sw-js', HYPER_PWA_FLX_SW_JS );
+		$page = $this->get( $body, $home_url, HYPER_PWA_SERVICE_WORKER_JS, HYPER_PWA_FLX_SERVICE_WORKER_JS );
+
+		return $page;
+	}
+
+	public function get_service_worker_unregister_html( $home_url )
+	{
+		$body = array(
+			'home_url' => $home_url
+		);
+
+		$page = $this->get( $body, $home_url, HYPER_PWA_SERVICE_WORKER_UNREGISTER_HTML, HYPER_PWA_FLX_SERVICE_WORKER_UNREGISTER_HTML );
 
 		return $page;
 	}

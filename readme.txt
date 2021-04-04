@@ -5,7 +5,7 @@ Tags: progressive web apps, pwa, wordpress, wp, plugin, manifest, web manifest, 
 Requires at least: 5.1
 Tested up to: 5.7
 Requires PHP: 7.2
-Stable tag: 1.3.0
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,9 +23,10 @@ This plugin is relying on a 3rd party Software as a Service -- FlexPlat: https:/
 
 In detail, to make PWA working, end users will ask your website to provide Service Workers related files:
 * hyper-pwa-manifest.json
-* hyper-pwa-sw.js
-* hyper-pwa-sw.html
 * hyper-pwa-offline.html
+* hyper-pwa-service-worker.html
+* hyper-pwa-service-worker.js
+* hyper-pwa-service-worker-unregister.html
 Inside of producing these files within my plugin, my plugin will send necessary parameters to FlexPlat, FlexPlat will build the Service Workers related files based on the received parameters, and return these files to your website.  Then my plugin forwards these files to end users.
 
 == Open Issue ==
@@ -58,6 +59,10 @@ None.
 I use Google Chrome Lighthouse PWA audit.  You can Google to find more solutions.
 
 == Changelog ==
+
+= 1.4.0 =
+(Sun., Apr. 04, 2021)
+* Deactivate Service Worker within Administration Dashboard.
 
 = 1.3.0 =
 (Tue., Mar. 30, 2021)
