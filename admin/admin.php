@@ -22,134 +22,224 @@ class HyperPWAAdmin
 			return;
 		}
 
-		$tab = !empty( $_GET['tab'] ) ? $_GET['tab'] : NULL;
-?>
+		$tab = !empty( $_GET['tab'] ) ? $_GET['tab'] : 'settings';
 
+		$page = '
 <div class="wrap">
-	<h2>Hyper PWA Settings Page</h2>
-<?php
+	<h2>' . esc_html( get_admin_page_title() ) . '</h2>';
+
 		if ( !empty( $_GET['settings-updated'] ) )
 		{
-			delete_transient( HYPER_PWA_MANIFEST_JSON );
-?>
+			$page .= '
 	<div class="notice notice-success is-dismissible">
 		<p>Your settings have been updated!</p>
-	</div>
-<?php
+	</div>';
 		}
-?>
-	<nav class="nav-tab-wrapper">
-		<a href="?page=hyper-pwa" class="nav-tab<?php if ( $tab === NULL ) { ?> nav-tab-active<?php } ?>">Setup</a>
-	</nav>
-	<div class="tab-content">
-<?php
-	switch ( $tab )
-	{
-		default:
-?>
-		<form method="POST" action="options.php">
-<?php
-		settings_fields( HYPER_PWA_SLUG );
-		do_settings_sections( HYPER_PWA_SLUG );
-		submit_button();
-?>
 
-		</form>
-		<p>At this moment, you should be able to pass Lighthouse PWA audit.  If you meet any problems, please send your website URL to me: rickey29@gmail.com, I will try to help.</p>
-<?php
-			break;
-	}
-?>
+		$page .= '
+	<nav class="nav-tab-wrapper">
+		<a href="?page=hyper-pwa" class="nav-tab' . ( ( $tab === 'settings' ) ? ' nav-tab-active' : '' ) . '">Settings</a>
+		<a href="?page=hyper-pwa&tab=recipes" class="nav-tab' . ( ( $tab === 'recipes' ) ? ' nav-tab-active' : '' ) . '">Recipes</a>
+		<a href="?page=hyper-pwa&tab=extensions" class="nav-tab' . ( ( $tab === 'extensions' ) ? ' nav-tab-active' : '' ) . '">Extensions</a>
+		<a href="?page=hyper-pwa&tab=faq" class="nav-tab' . ( ( $tab === 'faq' ) ? ' nav-tab-active' : '' ) . '">FAQ</a>
+		<a href="?page=hyper-pwa&tab=premium" class="nav-tab' . ( ( $tab === 'premium' ) ? ' nav-tab-active' : '' ) . '">Premium</a>
+	</nav>
+	<div class="tab-content">';
+
+		switch ( $tab )
+		{
+			case 'settings':
+				$page .= '
+		<form method="POST" action="options.php">
+';
+				echo $page;
+
+				settings_fields( 'hyper-pwa' );
+				do_settings_sections( 'hyper-pwa' );
+				submit_button();
+
+				$page = '
+		</form>';
+				break;
+
+			case 'recipes':
+				$page .= '
+		<p><strong>Handler 1</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: if network is not available</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: present Offline Page</p>
+		<p><strong>Handler 2</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.endsWith(\'\\.json\')</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
+		<p><strong>Handler 3</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-admin/\')</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
+		<p><strong>Handler 4</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/admin-ajax\\.php\')</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
+		<p><strong>Handler 5</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-activate\\.php\')</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
+		<p><strong>Handler 6</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-cron\\.php\')</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
+		<p><strong>Handler 7</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-login\\.php\')</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
+		<p><strong>Handler 8</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-signup\\.php\')</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
+		<p><strong>Handler 9</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.endsWith(\'&amp;preview=true\')</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
+		<p><strong>Handler 10</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: event.request.destination === \'document\'</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkFirst (maxEntries: 10)</p>
+		<p><strong>Handler 11</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: event.request.destination === \'script\'</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 15)</p>
+		<p><strong>Handler 12</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: event.request.destination === \'style\'</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 15)</p>
+		<p><strong>Handler 13</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: event.request.destination === \'image\'</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 15)</p>
+		<p><strong>Handler 14</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: event.request.destination === \'font\'</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 15)</p>
+		<p><strong>Handler 15 (Default Handler)</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: not match in all above routes</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 10, maxAgeSeconds: 24 * 60 * 60)</p>';
+				break;
+
+			case 'extensions':
+				$page .= '<p>Under development.</p>';
+				break;
+
+			case 'faq':
+				$page .= '
+		<p><strong>Question: How to validate my website PWA status?</strong></p>
+		<p>Answer: I use Google Chrome Lighthouse PWA audit.  You can Google to find more solutions.</p>';
+				break;
+
+			case 'premium':
+				$page .= '<p>If you are not satisfy with my current Service Worker strategy, want to have a personalization/customization development for your website, I can do it for your.  It is a paid service.  Send email to me: rickey29@gmail.com .</p>';
+				break;
+
+			default:
+				break;
+		}
+
+		$page .= '
 	</div>
-</div>
-<?php
+</div>';
+
+		echo $page;
 	}
 
 	public function create_page()
 	{
-		add_menu_page( 'Hyper PWA Settings Page', 'Hyper PWA', 'manage_options', HYPER_PWA_SLUG, array( $this, 'page_callback' ) );
+		add_menu_page( 'Hyper PWA', 'Hyper PWA', 'manage_options', 'hyper-pwa', array( $this, 'page_callback' ) );
 	}
 
 
-	public function section_callback( $arguments )
+	public function section_callback( $args )
 	{
-		switch( $arguments['id'] )
+		switch( $args['id'] )
 		{
-			case HYPER_PWA_SECTION:
+			case 'hyper-pwa-settings-section':
+				break;
+
+			case 'hyper-pwa-recipes-section':
+				break;
+
+			case 'hyper-pwa-extensions-section':
+				break;
+
+			case 'hyper-pwa-faq-section':
+				break;
+
+			case 'hyper-pwa-premium-section':
+				break;
+
+			default:
 				break;
 		}
 	}
 
 	public function setup_section()
 	{
-		add_settings_section( HYPER_PWA_SECTION, '', array( $this, 'section_callback' ), HYPER_PWA_SLUG );
+		add_settings_section( 'hyper-pwa-settings-section', '', array( $this, 'section_callback' ), 'hyper-pwa' );
+		add_settings_section( 'hyper-pwa-recipes-section', '', array( $this, 'section_callback' ), 'hyper-pwa' );
+		add_settings_section( 'hyper-pwa-extensions-section', '', array( $this, 'section_callback' ), 'hyper-pwa' );
+		add_settings_section( 'hyper-pwa-faq-section', '', array( $this, 'section_callback' ), 'hyper-pwa' );
+		add_settings_section( 'hyper-pwa-premium-section', '', array( $this, 'section_callback' ), 'hyper-pwa' );
 	}
 
 
-	public function field_callback( $arguments )
+	public function field_callback( $args )
 	{
-		$value = get_option( $arguments['uid'] );
+		$value = get_option( $args['uid'] );
 		if ( empty( $value ) )
 		{
-			$value = $arguments['default'];
+			$value = $args['default'];
 		}
 
-		switch ( $arguments['type'] )
+		switch ( $args['type'] )
 		{
 			case 'text':
 			case 'password':
 			case 'number':
-				printf( '<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $arguments['uid'], $arguments['type'], $arguments['placeholder'], $value );
+				printf( '<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $args['uid'], $args['type'], $args['placeholder'], $value );
 				break;
+
 			case 'textarea':
-				printf( '<textarea name="%1$s" id="%1$s" placeholder="%2$s" rows="5" cols="50">%3$s</textarea>', $arguments['uid'], $arguments['placeholder'], $value );
+				printf( '<textarea name="%1$s" id="%1$s" placeholder="%2$s" rows="5" cols="50">%3$s</textarea>', $args['uid'], $args['placeholder'], $value );
 				break;
+
 			case 'select':
 			case 'multiselect':
-				if ( !empty( $arguments['options'] ) && is_array( $arguments['options'] ) )
+				if ( !empty( $args['options'] ) && is_array( $args['options'] ) )
 				{
 					$attributes = '';
 					$options_markup = '';
-					foreach ( $arguments['options'] as $key => $label )
+					foreach ( $args['options'] as $key => $label )
 					{
 						$options_markup .= sprintf( '<option value="%s" %s>%s</option>', $key, selected( $value[ array_search( $key, $value, true ) ], $key, false ), $label );
 					}
-					if ( $arguments['type'] === 'multiselect' )
+					if ( $args['type'] === 'multiselect' )
 					{
 						$attributes = ' multiple="multiple" ';
 					}
-					printf( '<select name="%1$s[]" id="%1$s" %2$s>%3$s</select>', $arguments['uid'], $attributes, $options_markup );
+					printf( '<select name="%1$s[]" id="%1$s" %2$s>%3$s</select>', $args['uid'], $attributes, $options_markup );
 				}
 				break;
+
 			case 'radio':
 			case 'checkbox':
-				if ( !empty( $arguments['options'] ) && is_array( $arguments['options'] ) )
+				if ( !empty( $args['options'] ) && is_array( $args['options'] ) )
 				{
 					$options_markup = '';
 					$iterator = 0;
-					foreach ( $arguments['options'] as $key => $label )
+					foreach ( $args['options'] as $key => $label )
 					{
 						$iterator++;
-						$options_markup .= sprintf( '<label for="%1$s_%6$s"><input id="%1$s_%6$s" name="%1$s[]" type="%2$s" value="%3$s" %4$s /> %5$s</label><br/>', $arguments['uid'], $arguments['type'], $key, checked( $value[ array_search( $key, $value, true ) ], $key, false ), $label, $iterator );
+						$options_markup .= sprintf( '<label for="%1$s_%6$s"><input id="%1$s_%6$s" name="%1$s[]" type="%2$s" value="%3$s" %4$s /> %5$s</label><br/>', $args['uid'], $args['type'], $key, checked( $value[ array_search( $key, $value, true ) ], $key, false ), $label, $iterator );
 					}
 					printf( '<fieldset>%s</fieldset>', $options_markup );
 				}
 				break;
-			case 'mediauploader':
-?>
 
-			<input id="<?php echo $arguments['uid']; ?>" type="text" name="<?php echo $arguments['uid']; ?>" value="<?php echo $value; ?>" placeholder="<?php echo $arguments['placeholder']; ?>" />
-			<input id="<?php echo $arguments['button']; ?>" type="button" class="button-primary" value="Choose Icon" />
-<?php
+			case 'mediauploader':
+				printf( '<input id="%1$s" type="text" name="%1$s" value="%2$s" placeholder="%3$s" /><input id="%4$s" type="button" class="button-primary" value="Choose Icon" />', $args['uid'], $value, $args['placeholder'], $args['button'] );
 				break;
 		}
 
-		if ( $helper = $arguments['helper'] )
+		if ( $helper = $args['helper'] )
 		{
 			printf( '<span class="helper">%s</span>', $helper );
 		}
 
-		if ( $supplimental = $arguments['supplimental'] )
+		if ( $supplimental = $args['supplimental'] )
 		{
 			printf( '<p class="description">%s</p>', $supplimental );
 		}
@@ -161,29 +251,29 @@ class HyperPWAAdmin
 			array(
 				'uid' => HYPER_PWA_APP_ICON,
 				'label' => 'App Icon',
-				'section' => HYPER_PWA_SECTION,
+				'section' => 'hyper-pwa-settings-section',
 				'type' => 'mediauploader',
-				'placeholder' => 'App Icon',
+				'placeholder' => 'App Icon URL',
 				'helper' => '',
-				'supplimental' => 'Provide your App Icon here.  Should be a PNG format 192x192px size image.',
+				'supplimental' => 'Should be a PNG format 192x192px size image.',
 				'button' => 'app_icon'
 			),
 			array(
 				'uid' => HYPER_PWA_SPLASH_SCREEN_ICON,
 				'label' => 'Splash Screen Icon',
-				'section' => HYPER_PWA_SECTION,
+				'section' => 'hyper-pwa-settings-section',
 				'type' => 'mediauploader',
-				'placeholder' => 'Splash Screen Icon',
+				'placeholder' => 'Splash Screen Icon URL',
 				'helper' => '',
-				'supplimental' => 'Provide your Splash Screen Icon here.  Should be a PNG format 512x512px size image.',
+				'supplimental' => 'Should be a PNG format 512x512px size image.',
 				'button' => 'splash_screen_icon'
 			)
 		);
 
 		foreach ( $fields as $field )
 		{
-			add_settings_field( $field['uid'], $field['label'], array( $this, 'field_callback' ), HYPER_PWA_SLUG, $field['section'], $field );
-			register_setting( HYPER_PWA_SLUG, $field['uid'] );
+			add_settings_field( $field['uid'], $field['label'], array( $this, 'field_callback' ), 'hyper-pwa', $field['section'], $field );
+			register_setting( 'hyper-pwa', $field['uid'] );
 		}
 	}
 

@@ -3,7 +3,7 @@
 Plugin Name: Hyper PWA
 Plugin URI:  https://flexplat.com/hyper-pwa/
 Description: Converts WordPress into Progressive Web Apps style.
-Version:     1.4.0
+Version:     1.5.0
 Author:      Rickey Gu
 Author URI:  https://flexplat.com
 License:     GPL-2.0+
@@ -212,7 +212,7 @@ class HyperPWA
 
 	public function after_setup_theme()
 	{
-		if ( empty( $_COOKIE[HYPER_PWA_ADMIN] ) )
+		if ( empty( $_COOKIE['hyper-pwa-admin'] ) )
 		{
 			ob_start( array( $this, 'service_worker_callback' ) );
 		}
@@ -309,17 +309,23 @@ class HyperPWA
 		}
 		elseif ( $GLOBALS['pagenow'] === 'wp-login.php' )
 		{
-			setcookie( HYPER_PWA_ADMIN, '', $this->time_now - 1, COOKIEPATH, COOKIE_DOMAIN );
+			setcookie( 'hyper-pwa-admin', '', $this->time_now - 1, COOKIEPATH, COOKIE_DOMAIN );
+
+			delete_transient( HYPER_PWA_MANIFEST_JSON );
+			delete_transient( HYPER_PWA_OFFLINE_HTML );
+			delete_transient( HYPER_PWA_SERVICE_WORKER_HTML );
+			delete_transient( HYPER_PWA_SERVICE_WORKER_JS );
+			delete_transient( HYPER_PWA_SERVICE_WORKER_UNREGISTER_HTML );
 
 			return;
 		}
 		elseif ( is_admin() )
 		{
-			setcookie( HYPER_PWA_ADMIN, '1', $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+			setcookie( 'hyper-pwa-admin', '1', $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
 		}
-		elseif ( !empty( $_COOKIE[HYPER_PWA_ADMIN] ) )
+		elseif ( !empty( $_COOKIE['hyper-pwa-admin'] ) )
 		{
-			setcookie( HYPER_PWA_ADMIN, '1', $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+			setcookie( 'hyper-pwa-admin', '1', $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
 		}
 
 		add_action( 'after_setup_theme', array( $this, 'after_setup_theme' ) );
@@ -329,12 +335,12 @@ class HyperPWA
 
 	public function register_activation()
 	{
-		setcookie( HYPER_PWA_ADMIN, '1', $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
+		setcookie( 'hyper-pwa-admin', '1', $this->time_now + DAY_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN );
 	}
 
 	public function register_deactivation()
 	{
-		setcookie( HYPER_PWA_ADMIN, '', $this->time_now - 1, COOKIEPATH, COOKIE_DOMAIN );
+		setcookie( 'hyper-pwa-admin', '', $this->time_now - 1, COOKIEPATH, COOKIE_DOMAIN );
 
 		delete_transient( HYPER_PWA_MANIFEST_JSON );
 		delete_transient( HYPER_PWA_OFFLINE_HTML );
