@@ -19,15 +19,8 @@ class HyperPWAInc
 	}
 
 
-	public function add_service_worker( $page, $data )
+	public function add_service_worker( $page, $host_dir, $manifest_logo_192_url )
 	{
-		$manifest_logo_192_url = '';
-		if ( !empty( $data['manifest_logo_192_url'] ) && is_string( $data['manifest_logo_192_url'] ) )
-		{
-			$manifest_logo_192_url = $data['manifest_logo_192_url'];
-		}
-
-
 		$head = '';
 		if ( preg_match( '/<html\b[^>]* amp\b[^>]*>/i', $page ) )
 		{
@@ -56,9 +49,9 @@ class HyperPWAInc
 		$page = preg_replace( '/<link\b[^>]* rel=(("apple-touch-icon")|(\'apple-touch-icon\'))[^>]*\s*?\/?>/iU', '', $page );
 
 		$head = '
-<link rel="manifest" href="/hyper-pwa-manifest.json" />
+<link rel="manifest" href="' . $host_dir . '/hyper-pwa-manifest.json" />
 <meta name="theme-color" content="#ffffff" />
-<link rel="apple-touch-icon" href="' . $manifest_logo_192_url . '" />';
+<link rel="apple-touch-icon" href="' . $host_dir . $manifest_logo_192_url . '" />';
 
 		$page = preg_replace( '/<\/head>/i', $head . "\n" . '</head>', $page, 1 );
 
@@ -67,7 +60,7 @@ class HyperPWAInc
 		{
 			$page = preg_replace( '/<amp-install-serviceworker\b[^>]+><\/amp-install-serviceworker>/i', '', $page );
 
-			$body = '<amp-install-serviceworker src="/hyper-pwa-service-worker.js" data-iframe-src="/hyper-pwa-service-worker.html" layout="nodisplay"></amp-install-serviceworker>';
+			$body = '<amp-install-serviceworker src="' . $host_dir . '/hyper-pwa-service-worker.js" data-iframe-src="' . $host_dir . '/hyper-pwa-service-worker.html" layout="nodisplay"></amp-install-serviceworker>';
 
 			$page = preg_replace( '/<\/body>/i', $body . "\n" . '</body>', $page, 1 );
 		}

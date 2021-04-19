@@ -28,7 +28,7 @@ class HyperPWAFlx
 			return;
 		}
 
-		set_transient( $transient, $response, DAY_IN_SECONDS );
+		set_transient( $transient, $response, HYPER_PWA_TRANSIENT_EXPIRATION );
 
 		$response = wp_remote_retrieve_body( $response );
 		$response = json_decode( $response, TRUE );

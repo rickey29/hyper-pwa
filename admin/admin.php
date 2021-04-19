@@ -65,50 +65,50 @@ class HyperPWAAdmin
 			case 'recipes':
 				$page .= '
 		<p><strong>Handler 1</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: if network is not available</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: present Offline Page</p>
-		<p><strong>Handler 2</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.endsWith(\'\\.json\')</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
-		<p><strong>Handler 3</strong></p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-admin/\')</p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
+		<p><strong>Handler 2</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-activate.php\')</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
+		<p><strong>Handler 3</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-cron.php\')</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
 		<p><strong>Handler 4</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/admin-ajax\\.php\')</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-login.php\')</p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
 		<p><strong>Handler 5</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-activate\\.php\')</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-signup.php\')</p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
 		<p><strong>Handler 6</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-cron\\.php\')</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.includes(\'/admin-ajax.php\')</p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
 		<p><strong>Handler 7</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-login\\.php\')</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
-		<p><strong>Handler 8</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-signup\\.php\')</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
-		<p><strong>Handler 9</strong></p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.endsWith(\'&amp;preview=true\')</p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
-		<p><strong>Handler 10</strong></p>
+		<p><strong>Handler 8</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: if network is not available</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: present Offline Page</p>
+		<p><strong>Handler 9</strong></p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: event.request.destination === \'document\'</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkFirst (maxEntries: 10)</p>
-		<p><strong>Handler 11</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkFirst (maxEntries: 30, maxAgeSeconds: 60*60*24*30)</p>
+		<p><strong>Handler 10</strong></p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: event.request.destination === \'script\'</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 15)</p>
-		<p><strong>Handler 12</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 100, maxAgeSeconds: 60*60*24*30)</p>
+		<p><strong>Handler 11</strong></p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: event.request.destination === \'style\'</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 15)</p>
-		<p><strong>Handler 13</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 100, maxAgeSeconds: 60*60*24*30)</p>
+		<p><strong>Handler 12</strong></p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: event.request.destination === \'image\'</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 15)</p>
-		<p><strong>Handler 14</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 100, maxAgeSeconds: 60*60*24*30)</p>
+		<p><strong>Handler 13</strong></p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: event.request.destination === \'font\'</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 15)</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 100, maxAgeSeconds: 60*60*24*30)</p>
+		<p><strong>Handler 14</strong></p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.endsWith(\'.json\')</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 100, maxAgeSeconds: 60*60*24*30)</p>
 		<p><strong>Handler 15 (Default Handler)</strong></p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: not match in all above routes</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 10, maxAgeSeconds: 24 * 60 * 60)</p>';
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 100, maxAgeSeconds: 60*60*24*30)</p>';
 				break;
 
 			case 'extensions':
@@ -146,7 +146,12 @@ class HyperPWAAdmin
 	{
 		switch( $args['id'] )
 		{
-			case 'hyper-pwa-settings-section':
+			case 'hyper-pwa-settings-mandatory-section':
+				echo '<h4>Mandatory Setup:</h4>';
+				break;
+
+			case 'hyper-pwa-settings-optional-section':
+				echo '<hr><h4>Optional Setup:</h4>';
 				break;
 
 			case 'hyper-pwa-recipes-section':
@@ -168,7 +173,8 @@ class HyperPWAAdmin
 
 	public function setup_section()
 	{
-		add_settings_section( 'hyper-pwa-settings-section', '', array( $this, 'section_callback' ), 'hyper-pwa' );
+		add_settings_section( 'hyper-pwa-settings-mandatory-section', '', array( $this, 'section_callback' ), 'hyper-pwa' );
+		add_settings_section( 'hyper-pwa-settings-optional-section', '', array( $this, 'section_callback' ), 'hyper-pwa' );
 		add_settings_section( 'hyper-pwa-recipes-section', '', array( $this, 'section_callback' ), 'hyper-pwa' );
 		add_settings_section( 'hyper-pwa-extensions-section', '', array( $this, 'section_callback' ), 'hyper-pwa' );
 		add_settings_section( 'hyper-pwa-faq-section', '', array( $this, 'section_callback' ), 'hyper-pwa' );
@@ -189,7 +195,7 @@ class HyperPWAAdmin
 			case 'text':
 			case 'password':
 			case 'number':
-				printf( '<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" />', $args['uid'], $args['type'], $args['placeholder'], $value );
+				printf( '<input name="%1$s" id="%1$s" type="%2$s" placeholder="%3$s" value="%4$s" size="64" />', $args['uid'], $args['type'], $args['placeholder'], $value );
 				break;
 
 			case 'textarea':
@@ -230,7 +236,7 @@ class HyperPWAAdmin
 				break;
 
 			case 'mediauploader':
-				printf( '<input id="%1$s" type="text" name="%1$s" value="%2$s" placeholder="%3$s" /><input id="%4$s" type="button" class="button-primary" value="Choose Icon" />', $args['uid'], $value, $args['placeholder'], $args['button'] );
+				printf( '<input id="%1$s" type="text" name="%1$s" value="%2$s" placeholder="%3$s" size="64" /><input id="%4$s" type="button" class="button-primary" value="Choose Icon" />', $args['uid'], $value, $args['placeholder'], $args['button'] );
 				break;
 		}
 
@@ -247,11 +253,15 @@ class HyperPWAAdmin
 
 	public function setup_field()
 	{
+		$short_name = get_bloginfo( 'name' );
+		$description = get_bloginfo( 'description' );
+		$name = $short_name . ( !empty( $description ) ? ( ' -- ' . $description ) : '' );
+
 		$fields = array(
 			array(
 				'uid' => HYPER_PWA_APP_ICON,
 				'label' => 'App Icon',
-				'section' => 'hyper-pwa-settings-section',
+				'section' => 'hyper-pwa-settings-mandatory-section',
 				'type' => 'mediauploader',
 				'placeholder' => 'App Icon URL',
 				'helper' => '',
@@ -261,12 +271,42 @@ class HyperPWAAdmin
 			array(
 				'uid' => HYPER_PWA_SPLASH_SCREEN_ICON,
 				'label' => 'Splash Screen Icon',
-				'section' => 'hyper-pwa-settings-section',
+				'section' => 'hyper-pwa-settings-mandatory-section',
 				'type' => 'mediauploader',
 				'placeholder' => 'Splash Screen Icon URL',
 				'helper' => '',
 				'supplimental' => 'Should be a PNG format 512x512px size image.',
 				'button' => 'splash_screen_icon'
+			),
+			array(
+				'uid' => HYPER_PWA_NAME,
+				'label' => 'Name',
+				'section' => 'hyper-pwa-settings-optional-section',
+				'type' => 'text',
+				'placeholder' => 'Name',
+				'helper' => '',
+				'supplimental' => '',
+				'default' => $name
+			),
+			array(
+				'uid' => HYPER_PWA_SHORT_NAME,
+				'label' => 'Short Name',
+				'section' => 'hyper-pwa-settings-optional-section',
+				'type' => 'text',
+				'placeholder' => 'Short Name',
+				'helper' => '',
+				'supplimental' => '',
+				'default' => $short_name
+			),
+			array(
+				'uid' => HYPER_PWA_DESCRIPTION,
+				'label' => 'Description',
+				'section' => 'hyper-pwa-settings-optional-section',
+				'type' => 'text',
+				'placeholder' => 'Description',
+				'helper' => '',
+				'supplimental' => '',
+				'default' => $description
 			)
 		);
 
