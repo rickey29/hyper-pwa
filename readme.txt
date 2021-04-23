@@ -5,7 +5,7 @@ Tags: progressive web apps, pwa, wordpress, wp, plugin, manifest, web manifest, 
 Requires at least: 5.1
 Tested up to: 5.7.1
 Requires PHP: 7.2
-Stable tag: 1.6.0
+Stable tag: 1.7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -58,7 +58,19 @@ None.
 
 I use Google Chrome Lighthouse PWA audit.  You can Google to find more solutions.
 
+= How to add website to mobile device home screen? =
+
+https://natomasunified.org/kb/add-website-to-mobile-device-home-screen/
+
+= Does this plugin support Push Notifications? =
+
+No.  You can use other plugins, such as OneSignal: https://wordpress.org/plugins/onesignal-free-web-push-notifications/
+
 == Changelog ==
+
+= 1.7.0 =
+(Fri., Apr. 23, 2021)
+* Improve Service Worker recipe.
 
 = 1.6.0 =
 (Mon., Apr. 19, 2021)

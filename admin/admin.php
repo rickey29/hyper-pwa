@@ -103,10 +103,7 @@ class HyperPWAAdmin
 		<p><strong>Handler 13</strong></p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: event.request.destination === \'font\'</p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 100, maxAgeSeconds: 60*60*24*30)</p>
-		<p><strong>Handler 14</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.endsWith(\'.json\')</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 100, maxAgeSeconds: 60*60*24*30)</p>
-		<p><strong>Handler 15 (Default Handler)</strong></p>
+		<p><strong>Handler 14 (Default Handler)</strong></p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: not match in all above routes</p>
 		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 100, maxAgeSeconds: 60*60*24*30)</p>';
 				break;
@@ -118,11 +115,15 @@ class HyperPWAAdmin
 			case 'faq':
 				$page .= '
 		<p><strong>Question: How to validate my website PWA status?</strong></p>
-		<p>Answer: I use Google Chrome Lighthouse PWA audit.  You can Google to find more solutions.</p>';
+		<p><strong>Answer:</strong> I use Google Chrome Lighthouse PWA audit.  You can Google to find more solutions.</p>
+		<p><strong>Question: How to add my website to mobile device home screen?</strong></p>
+		<p><strong>Answer:</strong> https://natomasunified.org/kb/add-website-to-mobile-device-home-screen/</p>
+		<p><strong>Question: Does this plugin support Push Notifications?</strong></p>
+		<p><strong>Answer:</strong> No.  You can use other plugins, such as OneSignal: https://wordpress.org/plugins/onesignal-free-web-push-notifications/</p>';
 				break;
 
 			case 'premium':
-				$page .= '<p>If you are not satisfy with my current Service Worker strategy, want to have a personalization/customization development for your website, I can do it for your.  It is a paid service.  Send email to me: rickey29@gmail.com .</p>';
+				$page .= '<p>Each website is different, so the best caching strategy for each website is different.  If you are not satisfy with my current one, want to have a personalization/customization Service Worker development for your website, I can do it for your.  It is a paid service.  Send email to me: rickey29@gmail.com .</p>';
 				break;
 
 			default:
