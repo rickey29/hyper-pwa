@@ -145,10 +145,11 @@ class HyperPWAFlx
 		return $page;
 	}
 
-	public function get_service_worker_js( $home_url )
+	public function get_service_worker_js( $home_url, $data )
 	{
 		$body = array(
-			'home_url' => $home_url
+			'home_url' => $home_url,
+			'data' => $data
 		);
 
 		$page = $this->get( $body, $home_url, HYPER_PWA_SERVICE_WORKER_JS, HYPER_PWA_FLX_SERVICE_WORKER_JS );

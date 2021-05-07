@@ -6,8 +6,33 @@ if ( !defined( 'ABSPATH' ) )
 
 class HyperPWAAdmin
 {
+	private $tab = '';
+
+
 	public function __construct()
 	{
+		switch ( $_GET['tab'] )
+		{
+			case 'recipes':
+				$this->tab = 'recipes';
+				break;
+
+			case 'extensions':
+				$this->tab = 'extensions';
+				break;
+
+			case 'faq':
+				$this->tab = 'faq';
+				break;
+
+			case 'premium':
+				$this->tab = 'premium';
+				break;
+
+			default:
+				$this->tab = 'settings';
+				break;
+		}
 	}
 
 	public function __destruct()
@@ -15,14 +40,19 @@ class HyperPWAAdmin
 	}
 
 
+	public function hidden_field_callback( $page )
+	{
+		$page = preg_replace( '/<tr><th scope="row"><\/th><td>(<input name="[^"]+" id="[^"]+" type="[^"]+" value="[^"]*" \/>)<\/td><\/tr>/i', '$1', $page );
+
+		return $page;
+	}
+
 	public function page_callback()
 	{
 		if ( !current_user_can( 'manage_options' ) )
 		{
 			return;
 		}
-
-		$tab = !empty( $_GET['tab'] ) ? $_GET['tab'] : 'settings';
 
 		$page = '
 <div class="wrap">
@@ -38,15 +68,15 @@ class HyperPWAAdmin
 
 		$page .= '
 	<nav class="nav-tab-wrapper">
-		<a href="?page=hyper-pwa" class="nav-tab' . ( ( $tab === 'settings' ) ? ' nav-tab-active' : '' ) . '">Settings</a>
-		<a href="?page=hyper-pwa&tab=recipes" class="nav-tab' . ( ( $tab === 'recipes' ) ? ' nav-tab-active' : '' ) . '">Recipes</a>
-		<a href="?page=hyper-pwa&tab=extensions" class="nav-tab' . ( ( $tab === 'extensions' ) ? ' nav-tab-active' : '' ) . '">Extensions</a>
-		<a href="?page=hyper-pwa&tab=faq" class="nav-tab' . ( ( $tab === 'faq' ) ? ' nav-tab-active' : '' ) . '">FAQ</a>
-		<a href="?page=hyper-pwa&tab=premium" class="nav-tab' . ( ( $tab === 'premium' ) ? ' nav-tab-active' : '' ) . '">Premium</a>
+		<a href="?page=hyper-pwa" class="nav-tab' . ( ( $this->tab == 'settings' ) ? ' nav-tab-active' : '' ) . '">Settings</a>
+		<a href="?page=hyper-pwa&tab=recipes" class="nav-tab' . ( ( $this->tab == 'recipes' ) ? ' nav-tab-active' : '' ) . '">Recipes</a>
+		<a href="?page=hyper-pwa&tab=extensions" class="nav-tab' . ( ( $this->tab == 'extensions' ) ? ' nav-tab-active' : '' ) . '">Extensions</a>
+		<a href="?page=hyper-pwa&tab=faq" class="nav-tab' . ( ( $this->tab == 'faq' ) ? ' nav-tab-active' : '' ) . '">FAQ</a>
+		<a href="?page=hyper-pwa&tab=premium" class="nav-tab' . ( ( $this->tab == 'premium' ) ? ' nav-tab-active' : '' ) . '">Premium</a>
 	</nav>
 	<div class="tab-content">';
 
-		switch ( $tab )
+		switch ( $this->tab )
 		{
 			case 'settings':
 				$page .= '
@@ -54,9 +84,11 @@ class HyperPWAAdmin
 ';
 				echo $page;
 
+				ob_start( array( $this, 'hidden_field_callback' ) );
 				settings_fields( 'hyper-pwa' );
 				do_settings_sections( 'hyper-pwa' );
 				submit_button();
+				ob_end_flush();
 
 				$page = '
 		</form>';
@@ -64,48 +96,18 @@ class HyperPWAAdmin
 
 			case 'recipes':
 				$page .= '
-		<p><strong>Handler 1</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-admin/\')</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
-		<p><strong>Handler 2</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-activate.php\')</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
-		<p><strong>Handler 3</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-cron.php\')</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
-		<p><strong>Handler 4</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-login.php\')</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
-		<p><strong>Handler 5</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.startsWith(\'/wp-signup.php\')</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
-		<p><strong>Handler 6</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.includes(\'/admin-ajax.php\')</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
-		<p><strong>Handler 7</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: url.pathname.endsWith(\'&amp;preview=true\')</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkOnly</p>
-		<p><strong>Handler 8</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: if network is not available</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: present Offline Page</p>
-		<p><strong>Handler 9</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: event.request.destination === \'document\'</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: NetworkFirst (maxEntries: 30, maxAgeSeconds: 60*60*24*30)</p>
-		<p><strong>Handler 10</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: event.request.destination === \'script\'</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 100, maxAgeSeconds: 60*60*24*30)</p>
-		<p><strong>Handler 11</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: event.request.destination === \'style\'</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 100, maxAgeSeconds: 60*60*24*30)</p>
-		<p><strong>Handler 12</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: event.request.destination === \'image\'</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 100, maxAgeSeconds: 60*60*24*30)</p>
-		<p><strong>Handler 13</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: event.request.destination === \'font\'</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 100, maxAgeSeconds: 60*60*24*30)</p>
-		<p><strong>Handler 14 (Default Handler)</strong></p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Route: not match in all above routes</p>
-		<p>&nbsp;&nbsp;&nbsp;&nbsp;Strategy: StaleWhileRevalidate (maxEntries: 100, maxAgeSeconds: 60*60*24*30)</p>';
+		<form method="POST" action="options.php">
+';
+				echo $page;
+
+				ob_start( array( $this, 'hidden_field_callback' ) );
+				settings_fields( 'hyper-pwa' );
+				do_settings_sections( 'hyper-pwa' );
+				submit_button();
+				ob_end_flush();
+
+				$page = '
+		</form>';
 				break;
 
 			case 'extensions':
@@ -145,26 +147,26 @@ class HyperPWAAdmin
 
 	public function section_callback( $args )
 	{
-		switch( $args['id'] )
+		switch ( $args['id'] )
 		{
-			case 'hyper-pwa-settings-mandatory-section':
+			case 'hyper-pwa-mandatory-settings':
 				echo '<h4>Mandatory Setup:</h4>';
 				break;
 
-			case 'hyper-pwa-settings-optional-section':
+			case 'hyper-pwa-optional-settings':
 				echo '<hr><h4>Optional Setup:</h4>';
 				break;
 
-			case 'hyper-pwa-recipes-section':
+			case 'hyper-pwa-recipes':
 				break;
 
-			case 'hyper-pwa-extensions-section':
+			case 'hyper-pwa-extensions':
 				break;
 
-			case 'hyper-pwa-faq-section':
+			case 'hyper-pwa-faq':
 				break;
 
-			case 'hyper-pwa-premium-section':
+			case 'hyper-pwa-premium':
 				break;
 
 			default:
@@ -174,12 +176,32 @@ class HyperPWAAdmin
 
 	public function setup_section()
 	{
-		add_settings_section( 'hyper-pwa-settings-mandatory-section', '', array( $this, 'section_callback' ), 'hyper-pwa' );
-		add_settings_section( 'hyper-pwa-settings-optional-section', '', array( $this, 'section_callback' ), 'hyper-pwa' );
-		add_settings_section( 'hyper-pwa-recipes-section', '', array( $this, 'section_callback' ), 'hyper-pwa' );
-		add_settings_section( 'hyper-pwa-extensions-section', '', array( $this, 'section_callback' ), 'hyper-pwa' );
-		add_settings_section( 'hyper-pwa-faq-section', '', array( $this, 'section_callback' ), 'hyper-pwa' );
-		add_settings_section( 'hyper-pwa-premium-section', '', array( $this, 'section_callback' ), 'hyper-pwa' );
+		switch ( $this->tab )
+		{
+			case 'settings':
+				add_settings_section( 'hyper-pwa-mandatory-settings', '', array( $this, 'section_callback' ), 'hyper-pwa' );
+				add_settings_section( 'hyper-pwa-optional-settings', '', array( $this, 'section_callback' ), 'hyper-pwa' );
+				break;
+
+			case 'recipes':
+				add_settings_section( 'hyper-pwa-recipes', '', array( $this, 'section_callback' ), 'hyper-pwa' );
+				break;
+
+			case 'extensions':
+				add_settings_section( 'hyper-pwa-extensions', '', array( $this, 'section_callback' ), 'hyper-pwa' );
+				break;
+
+			case 'faq':
+				add_settings_section( 'hyper-pwa-faq', '', array( $this, 'section_callback' ), 'hyper-pwa' );
+				break;
+
+			case 'premium':
+				add_settings_section( 'hyper-pwa-premium', '', array( $this, 'section_callback' ), 'hyper-pwa' );
+				break;
+
+			default:
+				break;
+		}
 	}
 
 
@@ -239,6 +261,17 @@ class HyperPWAAdmin
 			case 'mediauploader':
 				printf( '<input id="%1$s" type="text" name="%1$s" value="%2$s" placeholder="%3$s" size="64" /><input id="%4$s" type="button" class="button-primary" value="Choose Icon" />', $args['uid'], $value, $args['placeholder'], $args['button'] );
 				break;
+
+			case 'hidden':
+				if ( is_array( $value ) )
+				{
+					printf( '<input name="%1$s[]" id="%1$s" type="%2$s" value="%3$s" />', $args['uid'], $args['type'], $value[0] );
+				}
+				else
+				{
+					printf( '<input name="%1$s" id="%1$s" type="%2$s" value="%3$s" />', $args['uid'], $args['type'], $value );
+				}
+				break;
 		}
 
 		if ( $helper = $args['helper'] )
@@ -254,6 +287,39 @@ class HyperPWAAdmin
 
 	public function setup_field()
 	{
+		$fields = array();
+		switch ( $this->tab )
+		{
+			case 'settings':
+				$fields = $this->get_settings();
+				break;
+
+			case 'recipes':
+				$fields = $this->get_recipes();
+				break;
+
+			case 'extensions':
+				break;
+
+			case 'faq':
+				break;
+
+			case 'premium':
+				break;
+
+			default:
+				return;
+		}
+
+		foreach ( $fields as $field )
+		{
+			add_settings_field( $field['uid'], $field['label'], array( $this, 'field_callback' ), 'hyper-pwa', $field['section'], $field );
+			register_setting( 'hyper-pwa', $field['uid'] );
+		}
+	}
+
+	private function get_settings()
+	{
 		$short_name = get_bloginfo( 'name' );
 		$description = get_bloginfo( 'description' );
 		$name = $short_name . ( !empty( $description ) ? ( ' -- ' . $description ) : '' );
@@ -262,7 +328,7 @@ class HyperPWAAdmin
 			array(
 				'uid' => HYPER_PWA_APP_ICON,
 				'label' => 'App Icon',
-				'section' => 'hyper-pwa-settings-mandatory-section',
+				'section' => 'hyper-pwa-mandatory-settings',
 				'type' => 'mediauploader',
 				'placeholder' => 'App Icon URL',
 				'helper' => '',
@@ -272,7 +338,7 @@ class HyperPWAAdmin
 			array(
 				'uid' => HYPER_PWA_SPLASH_SCREEN_ICON,
 				'label' => 'Splash Screen Icon',
-				'section' => 'hyper-pwa-settings-mandatory-section',
+				'section' => 'hyper-pwa-mandatory-settings',
 				'type' => 'mediauploader',
 				'placeholder' => 'Splash Screen Icon URL',
 				'helper' => '',
@@ -282,7 +348,7 @@ class HyperPWAAdmin
 			array(
 				'uid' => HYPER_PWA_NAME,
 				'label' => 'Name',
-				'section' => 'hyper-pwa-settings-optional-section',
+				'section' => 'hyper-pwa-optional-settings',
 				'type' => 'text',
 				'placeholder' => 'Name',
 				'helper' => '',
@@ -292,7 +358,7 @@ class HyperPWAAdmin
 			array(
 				'uid' => HYPER_PWA_SHORT_NAME,
 				'label' => 'Short Name',
-				'section' => 'hyper-pwa-settings-optional-section',
+				'section' => 'hyper-pwa-optional-settings',
 				'type' => 'text',
 				'placeholder' => 'Short Name',
 				'helper' => '',
@@ -302,20 +368,78 @@ class HyperPWAAdmin
 			array(
 				'uid' => HYPER_PWA_DESCRIPTION,
 				'label' => 'Description',
-				'section' => 'hyper-pwa-settings-optional-section',
+				'section' => 'hyper-pwa-optional-settings',
 				'type' => 'text',
 				'placeholder' => 'Description',
 				'helper' => '',
 				'supplimental' => '',
 				'default' => $description
+			),
+			array(
+				'uid' => HYPER_PWA_SITE_TYPE,
+				'label' => '',
+				'section' => 'hyper-pwa-mandatory-settings',
+				'type' => 'hidden'
 			)
 		);
 
-		foreach ( $fields as $field )
-		{
-			add_settings_field( $field['uid'], $field['label'], array( $this, 'field_callback' ), 'hyper-pwa', $field['section'], $field );
-			register_setting( 'hyper-pwa', $field['uid'] );
-		}
+		return $fields;
+	}
+
+	private function get_recipes()
+	{
+		$fields = array(
+			array(
+				'uid' => HYPER_PWA_APP_ICON,
+				'label' => '',
+				'section' => 'hyper-pwa-recipes',
+				'type' => 'hidden'
+			),
+			array(
+				'uid' => HYPER_PWA_SPLASH_SCREEN_ICON,
+				'label' => '',
+				'section' => 'hyper-pwa-recipes',
+				'type' => 'hidden'
+			),
+			array(
+				'uid' => HYPER_PWA_NAME,
+				'label' => '',
+				'section' => 'hyper-pwa-recipes',
+				'type' => 'hidden'
+			),
+			array(
+				'uid' => HYPER_PWA_SHORT_NAME,
+				'label' => '',
+				'section' => 'hyper-pwa-recipes',
+				'type' => 'hidden'
+			),
+			array(
+				'uid' => HYPER_PWA_DESCRIPTION,
+				'label' => '',
+				'section' => 'hyper-pwa-recipes',
+				'type' => 'hidden'
+			),
+			array(
+				'uid' => HYPER_PWA_SITE_TYPE,
+				'label' => 'Site Type',
+				'section' => 'hyper-pwa-recipes',
+				'type' => 'radio',
+				'options' => array(
+					'blog' => 'Blog',
+					'online shop' => 'Online Shop',
+					'news channel' => 'News Channel',
+					'small offline business' => 'Small Offline Business',
+					'corporation' => 'Corporation',
+					'portfolio' => 'Portfolio',
+					'else' => 'Something Else'
+				),
+				'default' => array(
+					'else'
+				)
+			)
+		);
+
+		return $fields;
 	}
 
 

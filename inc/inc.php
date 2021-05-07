@@ -19,7 +19,7 @@ class HyperPWAInc
 	}
 
 
-	public function add_service_worker( $page, $host_dir, $manifest_logo_192_url )
+	public function add_service_worker( $page, $host_dir, $manifest_logo_192_url, $page_type )
 	{
 		$head = '';
 		if ( preg_match( '/<html\b[^>]* amp\b[^>]*>/i', $page ) )
@@ -51,7 +51,8 @@ class HyperPWAInc
 		$head = '
 <link rel="manifest" href="' . $host_dir . '/hyper-pwa-manifest.json" />
 <meta name="theme-color" content="#ffffff" />
-<link rel="apple-touch-icon" href="' . $host_dir . $manifest_logo_192_url . '" />';
+<link rel="apple-touch-icon" href="' . $host_dir . $manifest_logo_192_url . '" />
+<meta name="hyper-pwa-page-type" content="' . $page_type . '" />';
 
 		$page = preg_replace( '/<\/head>/i', $head . "\n" . '</head>', $page, 1 );
 
