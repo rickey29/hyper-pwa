@@ -8,8 +8,15 @@ require_once plugin_dir_path( __FILE__ ) . 'cfg.php';
 
 class HyperPWAFlx
 {
-	public function __construct()
+	private $time_now = 0;
+
+	private $transient = '';
+	private $routing = '';
+
+
+	public function __construct( $time_now )
 	{
+		$this->time_now = $time_now;
 	}
 
 	public function __destruct()
@@ -17,7 +24,7 @@ class HyperPWAFlx
 	}
 
 
-	private function query( $url, $request, $transient )
+	private function query( $url, $request )
 	{
 		$url = esc_url( $url );
 		$response = wp_remote_get( $url, $request );
@@ -28,7 +35,7 @@ class HyperPWAFlx
 			return;
 		}
 
-		set_transient( $transient, $response, HYPER_PWA_TRANSIENT_EXPIRATION );
+		set_transient( $this->transient, $response, HYPER_PWA_TRANSIENT_EXPIRATION );
 
 		$response = wp_remote_retrieve_body( $response );
 		$response = json_decode( $response, TRUE );
@@ -36,9 +43,9 @@ class HyperPWAFlx
 		return $response;
 	}
 
-	private function query_flx( $transient, $routing, $request )
+	private function query_flx( $request )
 	{
-		$response = get_transient( $transient );
+		$response = get_transient( $this->transient );
 		if ( FALSE !== $response )
 		{
 			$response = wp_remote_retrieve_body( $response );
@@ -48,8 +55,8 @@ class HyperPWAFlx
 		}
 
 
-		$url = HYPER_PWA_FLX_SERVER_1 . $routing;
-		$response = $this->query( $url, $request, $transient );
+		$url = HYPER_PWA_FLX_SERVER_1 . $this->routing;
+		$response = $this->query( $url, $request );
 		if ( !empty( $response ) )
 		{
 			return $response;
@@ -61,8 +68,8 @@ class HyperPWAFlx
 			return;
 		}
 
-		$url = HYPER_PWA_FLX_SERVER_2 . $routing;
-		$response = $this->query( $url, $request, $transient );
+		$url = HYPER_PWA_FLX_SERVER_2 . $this->routing;
+		$response = $this->query( $url, $request );
 		if ( !empty( $response ) )
 		{
 			return $response;
@@ -74,8 +81,8 @@ class HyperPWAFlx
 			return;
 		}
 
-		$url = HYPER_PWA_FLX_SERVER_3 . $routing;
-		$response = $this->query( $url, $request, $transient );
+		$url = HYPER_PWA_FLX_SERVER_3 . $this->routing;
+		$response = $this->query( $url, $request );
 		if ( !empty( $response ) )
 		{
 			return $response;
@@ -84,8 +91,11 @@ class HyperPWAFlx
 		return;
 	}
 
-	private function get( $body, $home_url, $transient, $routing )
+	private function retrieve( $body, $home_url )
 	{
+		$nonce = wp_create_nonce( $this->time_now );
+		$body = array_merge( $body, array( 'nonce' => $nonce ) );
+
 		$request = array(
 			'body' => $body
 		);
@@ -95,8 +105,18 @@ class HyperPWAFlx
 			$request = array_merge( $request, array( 'sslverify' => FALSE ) );
 		}
 
-		$response = $this->query_flx( $transient, $routing, $request );
+		$response = $this->query_flx( $request );
 		if ( empty( $response ) )
+		{
+			return;
+		}
+
+		if ( empty( $response['nonce'] ) || !is_string( $response['nonce'] ) )
+		{
+			return;
+		}
+		$nonce = $response['nonce'];
+		if ( !wp_verify_nonce( $nonce, $this->time_now ) )
 		{
 			return;
 		}
@@ -111,59 +131,74 @@ class HyperPWAFlx
 	}
 
 
-	public function get_manifest_json( $home_url, $data )
+	public function retrieve_manifest_json( $home_url, $data )
 	{
+		$this->transient = HYPER_PWA_MANIFEST_JSON;
+		$this->routing = HYPER_PWA_FLX_MANIFEST_JSON;
+
 		$body = array(
 			'home_url' => $home_url,
 			'data' => $data
 		);
 
-		$page = $this->get( $body, $home_url, HYPER_PWA_MANIFEST_JSON, HYPER_PWA_FLX_MANIFEST_JSON );
+		$page = $this->retrieve( $body, $home_url );
 
 		return $page;
 	}
 
-	public function get_offline_html( $home_url )
+	public function retrieve_offline_html( $home_url )
 	{
+		$this->transient = HYPER_PWA_OFFLINE_HTML;
+		$this->routing = HYPER_PWA_FLX_OFFLINE_HTML;
+
 		$body = array(
 			'home_url' => $home_url
 		);
 
-		$page = $this->get( $body, $home_url, HYPER_PWA_OFFLINE_HTML, HYPER_PWA_FLX_OFFLINE_HTML );
+		$page = $this->retrieve( $body, $home_url );
 
 		return $page;
 	}
 
-	public function get_service_worker_html( $home_url )
+	public function retrieve_service_worker_html( $home_url )
 	{
+		$this->transient = HYPER_PWA_SERVICE_WORKER_HTML;
+		$this->routing = HYPER_PWA_FLX_SERVICE_WORKER_HTML;
+
 		$body = array(
 			'home_url' => $home_url
 		);
 
-		$page = $this->get( $body, $home_url, HYPER_PWA_SERVICE_WORKER_HTML, HYPER_PWA_FLX_SERVICE_WORKER_HTML );
+		$page = $this->retrieve( $body, $home_url );
 
 		return $page;
 	}
 
-	public function get_service_worker_js( $home_url, $data )
+	public function retrieve_service_worker_js( $home_url, $data )
 	{
+		$this->transient = HYPER_PWA_SERVICE_WORKER_JS;
+		$this->routing = HYPER_PWA_FLX_SERVICE_WORKER_JS;
+
 		$body = array(
 			'home_url' => $home_url,
 			'data' => $data
 		);
 
-		$page = $this->get( $body, $home_url, HYPER_PWA_SERVICE_WORKER_JS, HYPER_PWA_FLX_SERVICE_WORKER_JS );
+		$page = $this->retrieve( $body, $home_url );
 
 		return $page;
 	}
 
-	public function get_service_worker_unregister_html( $home_url )
+	public function retrieve_service_worker_unregister_html( $home_url )
 	{
+		$this->transient = HYPER_PWA_SERVICE_WORKER_UNREGISTER_HTML;
+		$this->routing = HYPER_PWA_FLX_SERVICE_WORKER_UNREGISTER_HTML;
+
 		$body = array(
 			'home_url' => $home_url
 		);
 
-		$page = $this->get( $body, $home_url, HYPER_PWA_SERVICE_WORKER_UNREGISTER_HTML, HYPER_PWA_FLX_SERVICE_WORKER_UNREGISTER_HTML );
+		$page = $this->retrieve( $body, $home_url );
 
 		return $page;
 	}

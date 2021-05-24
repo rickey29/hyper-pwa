@@ -4,11 +4,6 @@ if ( !defined( 'WP_UNINSTALL_PLUGIN' ) )
 	exit;
 }
 
-require_once plugin_dir_path( __FILE__ ) . 'cfg/cfg.php';
+global $wpdb;
 
-delete_option( HYPER_PWA_APP_ICON );
-delete_option( HYPER_PWA_SPLASH_SCREEN_ICON );
-delete_option( HYPER_PWA_NAME );
-delete_option( HYPER_PWA_SHORT_NAME );
-delete_option( HYPER_PWA_DESCRIPTION );
-delete_option( HYPER_PWA_SITE_TYPE );
+$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'hyper_pwa_%'" );

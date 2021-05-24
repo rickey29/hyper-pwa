@@ -6,46 +6,14 @@ if ( !defined( 'ABSPATH' ) )
 
 class HyperPWAAdmin
 {
-	private $tab = '';
-
-
 	public function __construct()
 	{
-		switch ( $_GET['tab'] )
-		{
-			case 'recipes':
-				$this->tab = 'recipes';
-				break;
-
-			case 'extensions':
-				$this->tab = 'extensions';
-				break;
-
-			case 'faq':
-				$this->tab = 'faq';
-				break;
-
-			case 'premium':
-				$this->tab = 'premium';
-				break;
-
-			default:
-				$this->tab = 'settings';
-				break;
-		}
 	}
 
 	public function __destruct()
 	{
 	}
 
-
-	public function hidden_field_callback( $page )
-	{
-		$page = preg_replace( '/<tr><th scope="row"><\/th><td>(<input name="[^"]+" id="[^"]+" type="[^"]+" value="[^"]*" \/>)<\/td><\/tr>/i', '$1', $page );
-
-		return $page;
-	}
 
 	public function page_callback()
 	{
@@ -54,89 +22,52 @@ class HyperPWAAdmin
 			return;
 		}
 
-		$page = '
+		echo '
 <div class="wrap">
 	<h2>' . esc_html( get_admin_page_title() ) . '</h2>';
 
 		if ( !empty( $_GET['settings-updated'] ) )
 		{
-			$page .= '
+			echo '
 	<div class="notice notice-success is-dismissible">
 		<p>Your settings have been updated!</p>
 	</div>';
 		}
 
-		$page .= '
-	<nav class="nav-tab-wrapper">
-		<a href="?page=hyper-pwa" class="nav-tab' . ( ( $this->tab == 'settings' ) ? ' nav-tab-active' : '' ) . '">Settings</a>
-		<a href="?page=hyper-pwa&tab=recipes" class="nav-tab' . ( ( $this->tab == 'recipes' ) ? ' nav-tab-active' : '' ) . '">Recipes</a>
-		<a href="?page=hyper-pwa&tab=extensions" class="nav-tab' . ( ( $this->tab == 'extensions' ) ? ' nav-tab-active' : '' ) . '">Extensions</a>
-		<a href="?page=hyper-pwa&tab=faq" class="nav-tab' . ( ( $this->tab == 'faq' ) ? ' nav-tab-active' : '' ) . '">FAQ</a>
-		<a href="?page=hyper-pwa&tab=premium" class="nav-tab' . ( ( $this->tab == 'premium' ) ? ' nav-tab-active' : '' ) . '">Premium</a>
-	</nav>
-	<div class="tab-content">';
+		echo '
+	<h3>Settings</h3>
+	<form method="POST" action="options.php">';
 
-		switch ( $this->tab )
-		{
-			case 'settings':
-				$page .= '
-		<form method="POST" action="options.php">
-';
-				echo $page;
+		settings_fields( 'hyper-pwa' );
+		do_settings_sections( 'hyper-pwa' );
+		submit_button();
 
-				ob_start( array( $this, 'hidden_field_callback' ) );
-				settings_fields( 'hyper-pwa' );
-				do_settings_sections( 'hyper-pwa' );
-				submit_button();
-				ob_end_flush();
-
-				$page = '
-		</form>';
-				break;
-
-			case 'recipes':
-				$page .= '
-		<form method="POST" action="options.php">
-';
-				echo $page;
-
-				ob_start( array( $this, 'hidden_field_callback' ) );
-				settings_fields( 'hyper-pwa' );
-				do_settings_sections( 'hyper-pwa' );
-				submit_button();
-				ob_end_flush();
-
-				$page = '
-		</form>';
-				break;
-
-			case 'extensions':
-				$page .= '<p>Under development.</p>';
-				break;
-
-			case 'faq':
-				$page .= '
-		<p><strong>Question: How to validate my website PWA status?</strong></p>
-		<p><strong>Answer:</strong> I use Google Chrome Lighthouse PWA audit.  You can Google to find more solutions.</p>
-		<p><strong>Question: How to add my website to mobile device home screen?</strong></p>
-		<p><strong>Answer:</strong> https://natomasunified.org/kb/add-website-to-mobile-device-home-screen/</p>
-		<p><strong>Question: Does this plugin support Push Notifications?</strong></p>
-		<p><strong>Answer:</strong> No.  You can use other plugins, such as OneSignal: https://wordpress.org/plugins/onesignal-free-web-push-notifications/</p>';
-				break;
-
-			case 'premium':
-				$page .= '<p>Each website is different, so the best caching strategy for each website is different.  If you are not satisfy with my current one, want to have a personalization/customization Service Worker development for your website, I can do it for your.  It is a paid service.  Send email to me: rickey29@gmail.com .</p>';
-				break;
-
-			default:
-				break;
-		}
-
-		$page .= '
-	</div>
+		echo '
+	</form>
+	<hr>
+	<h3>FAQ</h3>
+	<p><strong>Question: How to validate my website PWA status?</strong></p>
+	<p><strong>Answer:</strong> I use Google Chrome Lighthouse PWA audit.  You can Google to find more tools.</p>
+	<p><strong>Question: During Google Chrome Lighthouse PWA audit, I get the following error message: "No matching service worker detected. You may need to reload the page, or check that the scope of the service worker for the current page encloses the scope and start URL from the manifest."  And in Chrome Console, I get the following error message: "The script has an unsupported MIME type (\'text/html\')."  What should I do now?</strong></p>
+	<p><strong>Answer:</strong> Purge Cache -- If your website uses any cache plugin, purge the cache;  if your website uses any CDN/cache server, purge the cache.  Then refresh your web page to make sure the cache has the correct/updated content.  Finally redo the audit.</p>
+	<p><strong>Question: How to add my website to mobile device home screen?</strong></p>
+	<p><strong>Answer:</strong> https://natomasunified.org/kb/add-website-to-mobile-device-home-screen/</p>
+	<p><strong>Question: Does this plugin support Push Notifications?</strong></p>
+	<p><strong>Answer:</strong> No.  You can use other plugins, such as OneSignal: https://wordpress.org/plugins/onesignal-free-web-push-notifications/</p>
+	<hr>
+	<h3>Premium</h3>
+	<p>Each web page is different, so the best cache strategy for each web page is different.  If you want to have a personalization/customization Service Worker solution for each page of your site, instead of one solution for the whole site, I can do it for you.  It is a paid service.  Send email to me: rickey29@gmail.com .</p>
+	<p><strong>Price:</strong></p>
+	<ul>
+		<li> 10 USD per month, or   100 USD per year, when your website page number is between      1 to      9;</li>
+		<li> 20 USD per month, or   200 USD per year, when your website page number is between     10 to     99;</li>
+		<li> 40 USD per month, or   400 USD per year, when your website page number is between    100 to    999;</li>
+		<li> 80 USD per month, or   800 USD per year, when your website page number is between  1,000 to  9,999;</li>
+		<li>160 USD per month, or 1,600 USD per year, when your website page number is between 10,000 to 99,999;</li>
+		<li>... ... ...</li>
+	</ul>
+	<p>All above items include a 30 days free trial.</p>
 </div>';
-
-		echo $page;
 	}
 
 	public function create_page()
@@ -147,61 +78,11 @@ class HyperPWAAdmin
 
 	public function section_callback( $args )
 	{
-		switch ( $args['id'] )
-		{
-			case 'hyper-pwa-mandatory-settings':
-				echo '<h4>Mandatory Setup:</h4>';
-				break;
-
-			case 'hyper-pwa-optional-settings':
-				echo '<hr><h4>Optional Setup:</h4>';
-				break;
-
-			case 'hyper-pwa-recipes':
-				break;
-
-			case 'hyper-pwa-extensions':
-				break;
-
-			case 'hyper-pwa-faq':
-				break;
-
-			case 'hyper-pwa-premium':
-				break;
-
-			default:
-				break;
-		}
 	}
 
 	public function setup_section()
 	{
-		switch ( $this->tab )
-		{
-			case 'settings':
-				add_settings_section( 'hyper-pwa-mandatory-settings', '', array( $this, 'section_callback' ), 'hyper-pwa' );
-				add_settings_section( 'hyper-pwa-optional-settings', '', array( $this, 'section_callback' ), 'hyper-pwa' );
-				break;
-
-			case 'recipes':
-				add_settings_section( 'hyper-pwa-recipes', '', array( $this, 'section_callback' ), 'hyper-pwa' );
-				break;
-
-			case 'extensions':
-				add_settings_section( 'hyper-pwa-extensions', '', array( $this, 'section_callback' ), 'hyper-pwa' );
-				break;
-
-			case 'faq':
-				add_settings_section( 'hyper-pwa-faq', '', array( $this, 'section_callback' ), 'hyper-pwa' );
-				break;
-
-			case 'premium':
-				add_settings_section( 'hyper-pwa-premium', '', array( $this, 'section_callback' ), 'hyper-pwa' );
-				break;
-
-			default:
-				break;
-		}
+		add_settings_section( 'hyper-pwa-settings', '', array( $this, 'section_callback' ), 'hyper-pwa' );
 	}
 
 
@@ -261,17 +142,6 @@ class HyperPWAAdmin
 			case 'mediauploader':
 				printf( '<input id="%1$s" type="text" name="%1$s" value="%2$s" placeholder="%3$s" size="64" /><input id="%4$s" type="button" class="button-primary" value="Choose Icon" />', $args['uid'], $value, $args['placeholder'], $args['button'] );
 				break;
-
-			case 'hidden':
-				if ( is_array( $value ) )
-				{
-					printf( '<input name="%1$s[]" id="%1$s" type="%2$s" value="%3$s" />', $args['uid'], $args['type'], $value[0] );
-				}
-				else
-				{
-					printf( '<input name="%1$s" id="%1$s" type="%2$s" value="%3$s" />', $args['uid'], $args['type'], $value );
-				}
-				break;
 		}
 
 		if ( $helper = $args['helper'] )
@@ -287,48 +157,11 @@ class HyperPWAAdmin
 
 	public function setup_field()
 	{
-		$fields = array();
-		switch ( $this->tab )
-		{
-			case 'settings':
-				$fields = $this->get_settings();
-				break;
-
-			case 'recipes':
-				$fields = $this->get_recipes();
-				break;
-
-			case 'extensions':
-				break;
-
-			case 'faq':
-				break;
-
-			case 'premium':
-				break;
-
-			default:
-				return;
-		}
-
-		foreach ( $fields as $field )
-		{
-			add_settings_field( $field['uid'], $field['label'], array( $this, 'field_callback' ), 'hyper-pwa', $field['section'], $field );
-			register_setting( 'hyper-pwa', $field['uid'] );
-		}
-	}
-
-	private function get_settings()
-	{
-		$short_name = get_bloginfo( 'name' );
-		$description = get_bloginfo( 'description' );
-		$name = $short_name . ( !empty( $description ) ? ( ' -- ' . $description ) : '' );
-
 		$fields = array(
 			array(
 				'uid' => HYPER_PWA_APP_ICON,
 				'label' => 'App Icon',
-				'section' => 'hyper-pwa-mandatory-settings',
+				'section' => 'hyper-pwa-settings',
 				'type' => 'mediauploader',
 				'placeholder' => 'App Icon URL',
 				'helper' => '',
@@ -338,7 +171,7 @@ class HyperPWAAdmin
 			array(
 				'uid' => HYPER_PWA_SPLASH_SCREEN_ICON,
 				'label' => 'Splash Screen Icon',
-				'section' => 'hyper-pwa-mandatory-settings',
+				'section' => 'hyper-pwa-settings',
 				'type' => 'mediauploader',
 				'placeholder' => 'Splash Screen Icon URL',
 				'helper' => '',
@@ -346,91 +179,23 @@ class HyperPWAAdmin
 				'button' => 'splash_screen_icon'
 			),
 			array(
-				'uid' => HYPER_PWA_NAME,
-				'label' => 'Name',
-				'section' => 'hyper-pwa-optional-settings',
-				'type' => 'text',
-				'placeholder' => 'Name',
-				'helper' => '',
-				'supplimental' => '',
-				'default' => $name
-			),
-			array(
-				'uid' => HYPER_PWA_SHORT_NAME,
-				'label' => 'Short Name',
-				'section' => 'hyper-pwa-optional-settings',
-				'type' => 'text',
-				'placeholder' => 'Short Name',
-				'helper' => '',
-				'supplimental' => '',
-				'default' => $short_name
-			),
-			array(
-				'uid' => HYPER_PWA_DESCRIPTION,
-				'label' => 'Description',
-				'section' => 'hyper-pwa-optional-settings',
-				'type' => 'text',
-				'placeholder' => 'Description',
-				'helper' => '',
-				'supplimental' => '',
-				'default' => $description
-			),
-			array(
 				'uid' => HYPER_PWA_SITE_TYPE,
-				'label' => '',
-				'section' => 'hyper-pwa-mandatory-settings',
-				'type' => 'hidden'
-			)
-		);
-
-		return $fields;
-	}
-
-	private function get_recipes()
-	{
-		$fields = array(
-			array(
-				'uid' => HYPER_PWA_APP_ICON,
-				'label' => '',
-				'section' => 'hyper-pwa-recipes',
-				'type' => 'hidden'
-			),
-			array(
-				'uid' => HYPER_PWA_SPLASH_SCREEN_ICON,
-				'label' => '',
-				'section' => 'hyper-pwa-recipes',
-				'type' => 'hidden'
-			),
-			array(
-				'uid' => HYPER_PWA_NAME,
-				'label' => '',
-				'section' => 'hyper-pwa-recipes',
-				'type' => 'hidden'
-			),
-			array(
-				'uid' => HYPER_PWA_SHORT_NAME,
-				'label' => '',
-				'section' => 'hyper-pwa-recipes',
-				'type' => 'hidden'
-			),
-			array(
-				'uid' => HYPER_PWA_DESCRIPTION,
-				'label' => '',
-				'section' => 'hyper-pwa-recipes',
-				'type' => 'hidden'
-			),
-			array(
-				'uid' => HYPER_PWA_SITE_TYPE,
-				'label' => 'Site Type',
-				'section' => 'hyper-pwa-recipes',
+				'label' => 'Website Type',
+				'section' => 'hyper-pwa-settings',
 				'type' => 'radio',
 				'options' => array(
 					'blog' => 'Blog',
-					'online shop' => 'Online Shop',
-					'news channel' => 'News Channel',
+					'online shop' => 'Online Shop / eCommerce / Easy Digital Downloads',
+					'active news channel' => 'Active News Channel',
+					'lower volume news' => 'Lower Volume News',
 					'small offline business' => 'Small Offline Business',
 					'corporation' => 'Corporation',
-					'portfolio' => 'Portfolio',
+					'portfolio' => 'Portfolio / Photography',
+					'personal' => 'Personal',
+					'community' => 'Community',
+					'membership' => 'Membership',
+					'forums' => 'Forums',
+					'learning management systems' => 'Learning Management Systems',
 					'else' => 'Something Else'
 				),
 				'default' => array(
@@ -439,7 +204,11 @@ class HyperPWAAdmin
 			)
 		);
 
-		return $fields;
+		foreach ( $fields as $field )
+		{
+			add_settings_field( $field['uid'], $field['label'], array( $this, 'field_callback' ), 'hyper-pwa', $field['section'], $field );
+			register_setting( 'hyper-pwa', $field['uid'] );
+		}
 	}
 
 

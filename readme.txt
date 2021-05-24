@@ -1,19 +1,23 @@
 === Hyper PWA ===
 Contributors: rickey29
 Donate link: https://flexplat.com
-Tags: progressive web apps, pwa, wordpress, wp, plugin, manifest, web manifest, web app, offline support, add to homescreen, accelerated mobile pages, amp, pwamp, performance, speed up, service worker, service workers, workbox
+Tags: progressive web apps, pwa, web app manifests, service worker, workbox
 Requires at least: 5.1
-Tested up to: 5.7.1
+Tested up to: 5.7.2
 Requires PHP: 7.2
-Stable tag: 1.8.0
+Stable tag: 1.9.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Converts WordPress into Progressive Web Apps style.
+Convert WordPress into Progressive Web Apps style.
 
 == Description ==
-Hyper PWA plugin converts WordPress into Progressive Web Apps style.  It helps your website
+Hyper PWA plugin converts WordPress into Progressive Web Apps style.
+
+Features:
+* Based on WorkBox;
 * Pass Lighthouse PWA audit;
+* Provide multiple cache strategy recipes;
 * Work compatible with AMP;
 * Display an offline page when network is not available;
 * Bypass WordPress Administration Dashboard for PWA.
@@ -56,9 +60,13 @@ None.
 
 = How to validate my website PWA status? =
 
-I use Google Chrome Lighthouse PWA audit.  You can Google to find more solutions.
+I use Google Chrome Lighthouse PWA audit.  You can Google to find more tools.
 
-= How to add website to mobile device home screen? =
+= During Google Chrome Lighthouse PWA audit, I get following error message: "No matching service worker detected. You may need to reload the page, or check that the scope of the service worker for the current page encloses the scope and start URL from the manifest."  And in Chrome Console, I get following error message: "The script has an unsupported MIME type (\'text/html\')."  What should I do now? =
+
+Purge Cache -- If your website uses any cache plugin, purge the cache;  if your website uses any CDN/cache server, purge the cache.  Then, redo the audit.
+
+= How to add my website to mobile device home screen? = 
 
 https://natomasunified.org/kb/add-website-to-mobile-device-home-screen/
 
@@ -66,7 +74,23 @@ https://natomasunified.org/kb/add-website-to-mobile-device-home-screen/
 
 No.  You can use other plugins, such as OneSignal: https://wordpress.org/plugins/onesignal-free-web-push-notifications/
 
+== Premium ==
+Each web page is different, so the best cache strategy for each web page is different.  If you want to have a personalization/customization Service Worker solution for each page of your site, instead of one solution for the whole site, I can do it for you.  It is a paid service.  Send email to me: rickey29@gmail.com .
+
+Price:
+*  10 USD per month, or   100 USD per year, when your website page number is between      1 to      9;
+*  20 USD per month, or   200 USD per year, when your website page number is between     10 to     99;
+*  40 USD per month, or   400 USD per year, when your website page number is between    100 to    999;
+*  80 USD per month, or   800 USD per year, when your website page number is between  1,000 to  9,999;
+* 160 USD per month, or 1,600 USD per year, when your website page number is between 10,000 to 99,999;
+... ... ...
+All above items include a 30 days free trial.
+
 == Changelog ==
+
+= 1.9.0 =
+(Mon., May 24, 2021)
+* Update according to WordPress Plugin Security guideline.
 
 = 1.8.0 =
 (Fri., May 07, 2021)
