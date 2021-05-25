@@ -8,15 +8,12 @@ require_once plugin_dir_path( __FILE__ ) . 'cfg.php';
 
 class HyperPWAFlx
 {
-	private $time_now = 0;
-
 	private $transient = '';
 	private $routing = '';
 
 
-	public function __construct( $time_now )
+	public function __construct()
 	{
-		$this->time_now = $time_now;
 	}
 
 	public function __destruct()
@@ -93,9 +90,6 @@ class HyperPWAFlx
 
 	private function retrieve( $body, $home_url )
 	{
-		$nonce = wp_create_nonce( $this->time_now );
-		$body = array_merge( $body, array( 'nonce' => $nonce ) );
-
 		$request = array(
 			'body' => $body
 		);
@@ -107,16 +101,6 @@ class HyperPWAFlx
 
 		$response = $this->query_flx( $request );
 		if ( empty( $response ) )
-		{
-			return;
-		}
-
-		if ( empty( $response['nonce'] ) || !is_string( $response['nonce'] ) )
-		{
-			return;
-		}
-		$nonce = $response['nonce'];
-		if ( !wp_verify_nonce( $nonce, $this->time_now ) )
 		{
 			return;
 		}

@@ -3,7 +3,7 @@
 Plugin Name: Hyper PWA
 Plugin URI:  https://flexplat.com/hyper-pwa/
 Description: Convert WordPress into Progressive Web Apps style.
-Version:     1.9.0
+Version:     1.10.0
 Author:      Rickey Gu
 Author URI:  https://flexplat.com
 License:     GPL-2.0+
@@ -66,7 +66,7 @@ class HyperPWA
 	private function retrieve_manifest_json()
 	{
 		require_once $this->plugin_dir_path . 'flx/flx.php';
-		$flx = new HyperPWAFlx( $this->time_now );
+		$flx = new HyperPWAFlx();
 
 		$short_name = get_bloginfo( 'name' );
 		$description = get_bloginfo( 'description' );
@@ -116,7 +116,7 @@ class HyperPWA
 	private function retrieve_offline_html()
 	{
 		require_once $this->plugin_dir_path . 'flx/flx.php';
-		$flx = new HyperPWAFlx( $this->time_now );
+		$flx = new HyperPWAFlx();
 
 		$page = $flx->retrieve_offline_html( $this->home_url );
 		if ( empty( $page ) )
@@ -130,7 +130,7 @@ class HyperPWA
 	public function retrieve_service_worker_html()
 	{
 		require_once $this->plugin_dir_path . 'flx/flx.php';
-		$flx = new HyperPWAFlx( $this->time_now );
+		$flx = new HyperPWAFlx();
 
 		$page = $flx->retrieve_service_worker_html( $this->home_url );
 		if ( empty( $page ) )
@@ -144,7 +144,7 @@ class HyperPWA
 	private function retrieve_service_worker_js()
 	{
 		require_once $this->plugin_dir_path . 'flx/flx.php';
-		$flx = new HyperPWAFlx( $this->time_now );
+		$flx = new HyperPWAFlx();
 
 		$site_type = get_option( HYPER_PWA_SITE_TYPE );
 		if ( !empty( $site_type[0] ) )
@@ -172,7 +172,7 @@ class HyperPWA
 	public function retrieve_service_worker_unregister_html()
 	{
 		require_once $this->plugin_dir_path . 'flx/flx.php';
-		$flx = new HyperPWAFlx( $this->time_now );
+		$flx = new HyperPWAFlx();
 
 		$page = $flx->retrieve_service_worker_unregister_html( $this->home_url );
 		if ( empty( $page ) )
@@ -192,7 +192,7 @@ class HyperPWA
 		delete_transient( HYPER_PWA_SERVICE_WORKER_UNREGISTER_HTML );
 
 		require_once $this->plugin_dir_path . 'flx/flx.php';
-		$flx = new HyperPWAFlx( $this->time_now );
+		$flx = new HyperPWAFlx();
 
 		$this->retrieve_service_worker_html();
 	}
