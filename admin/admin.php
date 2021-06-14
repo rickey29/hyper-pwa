@@ -6,8 +6,25 @@ if ( !defined( 'ABSPATH' ) )
 
 class HyperPWAAdmin
 {
+	private $tab = '';
+
+
 	public function __construct()
 	{
+		switch ( $_GET['tab'] )
+		{
+			case 'faq':
+				$this->tab = 'faq';
+				break;
+
+			case 'premium':
+				$this->tab = 'premium';
+				break;
+
+			default:
+				$this->tab = 'settings';
+				break;
+		}
 	}
 
 	public function __destruct()
@@ -17,11 +34,6 @@ class HyperPWAAdmin
 
 	public function page_callback()
 	{
-		if ( !current_user_can( 'manage_options' ) )
-		{
-			return;
-		}
-
 		echo '
 <div class="wrap">
 	<h2>' . esc_html( get_admin_page_title() ) . '</h2>';
@@ -35,43 +47,71 @@ class HyperPWAAdmin
 		}
 
 		echo '
-	<h3>Settings</h3>
-	<form method="POST" action="options.php">';
+	<nav class="nav-tab-wrapper">
+		<a href="?page=hyper-pwa" class="nav-tab' . ( ( $this->tab == 'settings' ) ? ' nav-tab-active' : '' ) . '">Settings</a>
+		<a href="?page=hyper-pwa&tab=faq" class="nav-tab' . ( ( $this->tab == 'faq' ) ? ' nav-tab-active' : '' ) . '">FAQ</a>
+		<a href="?page=hyper-pwa&tab=premium" class="nav-tab' . ( ( $this->tab == 'premium' ) ? ' nav-tab-active' : '' ) . '">Premium</a>
+	</nav>
+	<div class="tab-content">';
 
-		settings_fields( 'hyper-pwa' );
-		do_settings_sections( 'hyper-pwa' );
-		submit_button();
+		switch ( $this->tab )
+		{
+			case 'settings':
+				echo '
+		<form method="POST" action="options.php">
+			';
+
+				settings_fields( 'hyper-pwa' );
+				do_settings_sections( 'hyper-pwa' );
+				submit_button();
+
+				echo '
+		</form>';
+				break;
+
+			case 'faq':
+				echo '
+		<p><strong>Question: How to validate my website PWA status?</strong></p>
+		<p><strong>Answer:</strong> I use Google Chrome Lighthouse PWA audit.  You can Google to find more tools.</p>
+		<p><strong>Question: During Google Chrome Lighthouse PWA audit, I get the following error message: "No matching service worker detected. You may need to reload the page, or check that the scope of the service worker for the current page encloses the scope and start URL from the manifest."  And in Chrome Console, I get the following error message: "The script has an unsupported MIME type (\'text/html\')."  What should I do now?</strong></p>
+		<p><strong>Answer:</strong> Purge Cache -- If your website uses any cache plugin, purge the cache;  if your website uses any CDN/cache server, purge the cache.  Then refresh your web page to make sure the cache has the correct/updated content.  Finally redo the audit.</p>
+		<p><strong>Question: How to add my website to mobile device home screen?</strong></p>
+		<p><strong>Answer:</strong> https://natomasunified.org/kb/add-website-to-mobile-device-home-screen/</p>
+		<p><strong>Question: Does this plugin support Push Notifications?</strong></p>
+		<p><strong>Answer:</strong> No.  You can use other plugins, such as OneSignal: https://wordpress.org/plugins/onesignal-free-web-push-notifications/</p>';
+				break;
+
+			case 'premium':
+				echo '
+		<p>Each web page is different, so the best cache strategy for each web page is different.  If you want to have a personalization/customization Service Worker solution for each page of your site, instead of one solution for the whole site, I can do it for you.  It is a paid service.  Send email to me: rickey29@gmail.com .</p>
+		<p><strong>Price:</strong></p>
+		<ul>
+			<li> 10 USD per month, or   100 USD per year, when your website page number is between      1 to      9;</li>
+			<li> 20 USD per month, or   200 USD per year, when your website page number is between     10 to     99;</li>
+			<li> 40 USD per month, or   400 USD per year, when your website page number is between    100 to    999;</li>
+			<li> 80 USD per month, or   800 USD per year, when your website page number is between  1,000 to  9,999;</li>
+			<li>160 USD per month, or 1,600 USD per year, when your website page number is between 10,000 to 99,999;</li>
+			<li>... ... ...</li>
+		</ul>
+		<p>All above items include a 30 days free trial.</p>';
+				break;
+
+			default:
+				break;
+		}
 
 		echo '
-	</form>
-	<hr>
-	<h3>FAQ</h3>
-	<p><strong>Question: How to validate my website PWA status?</strong></p>
-	<p><strong>Answer:</strong> I use Google Chrome Lighthouse PWA audit.  You can Google to find more tools.</p>
-	<p><strong>Question: During Google Chrome Lighthouse PWA audit, I get the following error message: "No matching service worker detected. You may need to reload the page, or check that the scope of the service worker for the current page encloses the scope and start URL from the manifest."  And in Chrome Console, I get the following error message: "The script has an unsupported MIME type (\'text/html\')."  What should I do now?</strong></p>
-	<p><strong>Answer:</strong> Purge Cache -- If your website uses any cache plugin, purge the cache;  if your website uses any CDN/cache server, purge the cache.  Then refresh your web page to make sure the cache has the correct/updated content.  Finally redo the audit.</p>
-	<p><strong>Question: How to add my website to mobile device home screen?</strong></p>
-	<p><strong>Answer:</strong> https://natomasunified.org/kb/add-website-to-mobile-device-home-screen/</p>
-	<p><strong>Question: Does this plugin support Push Notifications?</strong></p>
-	<p><strong>Answer:</strong> No.  You can use other plugins, such as OneSignal: https://wordpress.org/plugins/onesignal-free-web-push-notifications/</p>
-	<hr>
-	<h3>Premium</h3>
-	<p>Each web page is different, so the best cache strategy for each web page is different.  If you want to have a personalization/customization Service Worker solution for each page of your site, instead of one solution for the whole site, I can do it for you.  It is a paid service.  Send email to me: rickey29@gmail.com .</p>
-	<p><strong>Price:</strong></p>
-	<ul>
-		<li> 10 USD per month, or   100 USD per year, when your website page number is between      1 to      9;</li>
-		<li> 20 USD per month, or   200 USD per year, when your website page number is between     10 to     99;</li>
-		<li> 40 USD per month, or   400 USD per year, when your website page number is between    100 to    999;</li>
-		<li> 80 USD per month, or   800 USD per year, when your website page number is between  1,000 to  9,999;</li>
-		<li>160 USD per month, or 1,600 USD per year, when your website page number is between 10,000 to 99,999;</li>
-		<li>... ... ...</li>
-	</ul>
-	<p>All above items include a 30 days free trial.</p>
+	</div>
 </div>';
 	}
 
 	public function create_page()
 	{
+		if ( !current_user_can( 'manage_options' ) )
+		{
+			return;
+		}
+
 		add_menu_page( 'Hyper PWA', 'Hyper PWA', 'manage_options', 'hyper-pwa', array( $this, 'page_callback' ) );
 	}
 
@@ -82,6 +122,11 @@ class HyperPWAAdmin
 
 	public function setup_section()
 	{
+		if ( !current_user_can( 'manage_options' ) )
+		{
+			return;
+		}
+
 		add_settings_section( 'hyper-pwa-settings', '', array( $this, 'section_callback' ), 'hyper-pwa' );
 	}
 
@@ -89,7 +134,7 @@ class HyperPWAAdmin
 	public function field_callback( $args )
 	{
 		$value = get_option( $args['uid'] );
-		if ( empty( $value ) )
+		if ( empty( $value ) && !empty( $args['default'] ) )
 		{
 			$value = $args['default'];
 		}
@@ -144,19 +189,26 @@ class HyperPWAAdmin
 				break;
 		}
 
-		if ( $helper = $args['helper'] )
+		if ( !empty( $args['helper'] ) )
 		{
+			$helper = $args['helper'];
 			printf( '<span class="helper">%s</span>', $helper );
 		}
 
-		if ( $supplimental = $args['supplimental'] )
+		if ( !empty( $args['supplimental'] ) )
 		{
+			$supplimental = $args['supplimental'];
 			printf( '<p class="description">%s</p>', $supplimental );
 		}
 	}
 
 	public function setup_field()
 	{
+		if ( !current_user_can( 'manage_options' ) )
+		{
+			return;
+		}
+
 		$fields = array(
 			array(
 				'uid' => HYPER_PWA_APP_ICON,
@@ -177,30 +229,6 @@ class HyperPWAAdmin
 				'helper' => '',
 				'supplimental' => 'Should be a PNG format 512x512px size image.',
 				'button' => 'splash_screen_icon'
-			),
-			array(
-				'uid' => HYPER_PWA_SITE_TYPE,
-				'label' => 'Website Type',
-				'section' => 'hyper-pwa-settings',
-				'type' => 'radio',
-				'options' => array(
-					'blog' => 'Blog',
-					'online shop' => 'Online Shop / eCommerce / Easy Digital Downloads',
-					'active news channel' => 'Active News Channel',
-					'lower volume news' => 'Lower Volume News',
-					'small offline business' => 'Small Offline Business',
-					'corporation' => 'Corporation',
-					'portfolio' => 'Portfolio / Photography',
-					'personal' => 'Personal',
-					'community' => 'Community',
-					'membership' => 'Membership',
-					'forums' => 'Forums',
-					'learning management systems' => 'Learning Management Systems',
-					'else' => 'Something Else'
-				),
-				'default' => array(
-					'else'
-				)
 			)
 		);
 

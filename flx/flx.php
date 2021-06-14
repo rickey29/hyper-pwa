@@ -158,14 +158,13 @@ class HyperPWAFlx
 		return $page;
 	}
 
-	public function retrieve_service_worker_js( $home_url, $data )
+	public function retrieve_service_worker_js( $home_url )
 	{
 		$this->transient = HYPER_PWA_SERVICE_WORKER_JS;
 		$this->routing = HYPER_PWA_FLX_SERVICE_WORKER_JS;
 
 		$body = array(
-			'home_url' => $home_url,
-			'data' => $data
+			'home_url' => $home_url
 		);
 
 		$page = $this->retrieve( $body, $home_url );

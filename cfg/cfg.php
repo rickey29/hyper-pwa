@@ -12,4 +12,3 @@ define( 'HYPER_PWA_SERVICE_WORKER_UNREGISTER_HTML', 'hyper-pwa-service-worker-un
 
 define( 'HYPER_PWA_APP_ICON', 'hyper_pwa_app_icon' );
 define( 'HYPER_PWA_SPLASH_SCREEN_ICON', 'hyper_pwa_splash_screen_icon' );
-define( 'HYPER_PWA_SITE_TYPE', 'hyper_pwa_site_type' );

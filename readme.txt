@@ -5,7 +5,7 @@ Tags: progressive web apps, pwa, web app manifests, service worker, workbox
 Requires at least: 5.1
 Tested up to: 5.7.2
 Requires PHP: 7.2
-Stable tag: 1.10.0
+Stable tag: 1.11.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,6 +87,10 @@ Price:
 All above items include a 30 days free trial.
 
 == Changelog ==
+
+= 1.11.0 =
+(Mon., Jun. 14, 2021)
+* New feature: Use corn job to refresh cache.
 
 = 1.10.0 =
 (Tue., May 25, 2021)

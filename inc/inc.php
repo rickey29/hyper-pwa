@@ -83,7 +83,6 @@ class HyperPWAInc
 		return $page_type;
 	}
 
-
 	public function add_service_worker( $page, $host_dir, $manifest_logo_192_url )
 	{
 		$head = '';
@@ -150,6 +149,39 @@ class HyperPWAInc
 		{
 			$page = preg_replace( '/(<head\b[^>]*>)/i', '${1}' . "\n" . $head, $page, 1 );
 		}
+
+		return $page;
+	}
+
+
+	private function audio_callback($matches)
+	{
+		$match = $matches[1];
+
+		if ( preg_match('/ crossOrigin=(("([^"]*)")|(\'([^\']*)\'))/i', $match) )
+		{
+			return '<audio' . $match . '>';
+		}
+
+		return '<audio' . $match . ' crossOrigin="anonymous">';
+	}
+
+	private function video_callback($matches)
+	{
+		$match = $matches[1];
+
+		if ( preg_match('/ crossOrigin=(("([^"]*)")|(\'([^\']*)\'))/i', $match) )
+		{
+			return '<video' . $match . '>';
+		}
+
+		return '<video' . $match . ' crossOrigin="anonymous">';
+	}
+
+	public function update_page( $page )
+	{
+		$page = preg_replace_callback('/<audio\b([^>]*)\s*?>/iU', array($this, 'audio_callback'), $page);
+		$page = preg_replace_callback('/<video\b([^>]*)\s*?>/iU', array($this, 'video_callback'), $page);
 
 		return $page;
 	}
