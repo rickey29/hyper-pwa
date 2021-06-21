@@ -3,7 +3,7 @@
 Plugin Name: Hyper PWA
 Plugin URI:  https://flexplat.com/hyper-pwa/
 Description: Convert WordPress into Progressive Web Apps style.
-Version:     1.11.0
+Version:     1.12.0
 Author:      Rickey Gu
 Author URI:  https://flexplat.com
 License:     GPL-2.0+
@@ -208,12 +208,6 @@ class HyperPWA
 		$manifest_logo_192_url = esc_url_raw( $manifest_logo_192_url );
 
 		$page2 = $inc->add_service_worker( $page, $this->host_dir, $manifest_logo_192_url );
-		if ( empty( $page2 ) )
-		{
-			return $page;
-		}
-
-		$page2 = $inc->update_page( $page2 );
 		if ( empty( $page2 ) )
 		{
 			return $page;

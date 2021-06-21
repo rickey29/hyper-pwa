@@ -11,19 +11,24 @@ class HyperPWAAdmin
 
 	public function __construct()
 	{
-		switch ( $_GET['tab'] )
+		if ( empty( $_GET['tab'] ) )
 		{
-			case 'faq':
-				$this->tab = 'faq';
-				break;
+			$this->tab = 'settings';
 
-			case 'premium':
-				$this->tab = 'premium';
-				break;
+			return;
+		}
 
-			default:
-				$this->tab = 'settings';
-				break;
+		if ( $_GET['tab'] == 'faq' )
+		{
+			$this->tab = 'faq';
+		}
+		elseif ( $_GET['tab'] == 'premium' )
+		{
+			$this->tab = 'premium';
+		}
+		else
+		{
+			$this->tab = 'settings';
 		}
 	}
 
@@ -54,23 +59,22 @@ class HyperPWAAdmin
 	</nav>
 	<div class="tab-content">';
 
-		switch ( $this->tab )
+		if ( $this->tab == 'settings' )
 		{
-			case 'settings':
-				echo '
+			echo '
 		<form method="POST" action="options.php">
 			';
 
-				settings_fields( 'hyper-pwa' );
-				do_settings_sections( 'hyper-pwa' );
-				submit_button();
+			settings_fields( 'hyper-pwa' );
+			do_settings_sections( 'hyper-pwa' );
+			submit_button();
 
-				echo '
+			echo '
 		</form>';
-				break;
-
-			case 'faq':
-				echo '
+		}
+		elseif ( $this->tab == 'faq' )
+		{
+			echo '
 		<p><strong>Question: How to validate my website PWA status?</strong></p>
 		<p><strong>Answer:</strong> I use Google Chrome Lighthouse PWA audit.  You can Google to find more tools.</p>
 		<p><strong>Question: During Google Chrome Lighthouse PWA audit, I get the following error message: "No matching service worker detected. You may need to reload the page, or check that the scope of the service worker for the current page encloses the scope and start URL from the manifest."  And in Chrome Console, I get the following error message: "The script has an unsupported MIME type (\'text/html\')."  What should I do now?</strong></p>
@@ -79,10 +83,10 @@ class HyperPWAAdmin
 		<p><strong>Answer:</strong> https://natomasunified.org/kb/add-website-to-mobile-device-home-screen/</p>
 		<p><strong>Question: Does this plugin support Push Notifications?</strong></p>
 		<p><strong>Answer:</strong> No.  You can use other plugins, such as OneSignal: https://wordpress.org/plugins/onesignal-free-web-push-notifications/</p>';
-				break;
-
-			case 'premium':
-				echo '
+		}
+		elseif ( $this->tab == 'premium' )
+		{
+			echo '
 		<p>Each web page is different, so the best cache strategy for each web page is different.  If you want to have a personalization/customization Service Worker solution for each page of your site, instead of one solution for the whole site, I can do it for you.  It is a paid service.  Send email to me: rickey29@gmail.com .</p>
 		<p><strong>Price:</strong></p>
 		<ul>
@@ -94,10 +98,6 @@ class HyperPWAAdmin
 			<li>... ... ...</li>
 		</ul>
 		<p>All above items include a 30 days free trial.</p>';
-				break;
-
-			default:
-				break;
 		}
 
 		echo '

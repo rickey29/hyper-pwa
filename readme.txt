@@ -5,7 +5,7 @@ Tags: progressive web apps, pwa, web app manifests, service worker, workbox
 Requires at least: 5.1
 Tested up to: 5.7.2
 Requires PHP: 7.2
-Stable tag: 1.11.0
+Stable tag: 1.12.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,7 +17,7 @@ Hyper PWA plugin converts WordPress into Progressive Web Apps style.
 Features:
 * Based on WorkBox;
 * Pass Lighthouse PWA audit;
-* Provide multiple cache strategy recipes;
+* Background synchronize Google Analytics data when network is recovered;
 * Work compatible with AMP;
 * Display an offline page when network is not available;
 * Bypass WordPress Administration Dashboard for PWA.
@@ -87,6 +87,10 @@ Price:
 All above items include a 30 days free trial.
 
 == Changelog ==
+
+= 1.12.0 =
+(Mon., Jun. 21, 2021)
+* Improvement for Lighthouse Audit.
 
 = 1.11.0 =
 (Mon., Jun. 14, 2021)
