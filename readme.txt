@@ -5,7 +5,7 @@ Tags: progressive web apps, pwa, web app manifests, service worker, workbox
 Requires at least: 5.1
 Tested up to: 5.7.2
 Requires PHP: 7.2
-Stable tag: 1.12.0
+Stable tag: 1.13.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -62,10 +62,6 @@ None.
 
 I use Google Chrome Lighthouse PWA audit.  You can Google to find more tools.
 
-= During Google Chrome Lighthouse PWA audit, I get following error message: "No matching service worker detected. You may need to reload the page, or check that the scope of the service worker for the current page encloses the scope and start URL from the manifest."  And in Chrome Console, I get following error message: "The script has an unsupported MIME type (\'text/html\')."  What should I do now? =
-
-Purge Cache -- If your website uses any cache plugin, purge the cache;  if your website uses any CDN/cache server, purge the cache.  Then, redo the audit.
-
 = How to add my website to mobile device home screen? = 
 
 https://natomasunified.org/kb/add-website-to-mobile-device-home-screen/
@@ -73,6 +69,14 @@ https://natomasunified.org/kb/add-website-to-mobile-device-home-screen/
 = Does this plugin support Push Notifications? =
 
 No.  You can use other plugins, such as OneSignal: https://wordpress.org/plugins/onesignal-free-web-push-notifications/
+
+= During Google Chrome Lighthouse PWA audit, I get following error message: "No matching service worker detected. You may need to reload the page, or check that the scope of the service worker for the current page encloses the scope and start URL from the manifest."  And in Chrome Console, I get following error message: "The script has an unsupported MIME type (\'text/html\')."  What should I do now? =
+
+Purge Cache -- If your website uses any cache plugin, purge the cache;  if your website uses any CDN/cache server, purge the cache.  Then, redo the audit.
+
+= Get the following error message in web browser console: "The service worker navigation preload request was cancelled before 'preloadResponse' settled. If you intend to use 'preloadResponse', use waitUntil() or respondWith() to wait for the promise to settle." What should I do now? =
+
+https://stackoverflow.com/questions/66818391/service-worker-the-service-worker-navigation-preload-request-failed-with-networ
 
 == Premium ==
 Each web page is different, so the best cache strategy for each web page is different.  If you want to have a personalization/customization Service Worker solution for each page of your site, instead of one solution for the whole site, I can do it for you.  It is a paid service.  Send email to me: rickey29@gmail.com .
@@ -87,6 +91,10 @@ Price:
 All above items include a 30 days free trial.
 
 == Changelog ==
+
+= 1.13.0 =
+(Mon., Jun. 28, 2021)
+* Improvement for PluginTests.
 
 = 1.12.0 =
 (Mon., Jun. 21, 2021)

@@ -77,12 +77,14 @@ class HyperPWAAdmin
 			echo '
 		<p><strong>Question: How to validate my website PWA status?</strong></p>
 		<p><strong>Answer:</strong> I use Google Chrome Lighthouse PWA audit.  You can Google to find more tools.</p>
-		<p><strong>Question: During Google Chrome Lighthouse PWA audit, I get the following error message: "No matching service worker detected. You may need to reload the page, or check that the scope of the service worker for the current page encloses the scope and start URL from the manifest."  And in Chrome Console, I get the following error message: "The script has an unsupported MIME type (\'text/html\')."  What should I do now?</strong></p>
-		<p><strong>Answer:</strong> Purge Cache -- If your website uses any cache plugin, purge the cache;  if your website uses any CDN/cache server, purge the cache.  Then refresh your web page to make sure the cache has the correct/updated content.  Finally redo the audit.</p>
 		<p><strong>Question: How to add my website to mobile device home screen?</strong></p>
 		<p><strong>Answer:</strong> https://natomasunified.org/kb/add-website-to-mobile-device-home-screen/</p>
 		<p><strong>Question: Does this plugin support Push Notifications?</strong></p>
-		<p><strong>Answer:</strong> No.  You can use other plugins, such as OneSignal: https://wordpress.org/plugins/onesignal-free-web-push-notifications/</p>';
+		<p><strong>Answer:</strong> No.  You can use other plugins, such as OneSignal: https://wordpress.org/plugins/onesignal-free-web-push-notifications/</p>
+		<p><strong>Question: During Google Chrome Lighthouse PWA audit, I get the following error message: "No matching service worker detected. You may need to reload the page, or check that the scope of the service worker for the current page encloses the scope and start URL from the manifest."  And in Chrome Console, I get the following error message: "The script has an unsupported MIME type (\'text/html\')."  What should I do now?</strong></p>
+		<p><strong>Answer:</strong> Purge Cache -- If your website uses any cache plugin, purge the cache;  if your website uses any CDN/cache server, purge the cache.  Then refresh your web page to make sure the cache has the correct/updated content.  Finally redo the audit.</p>
+		<p><strong>Question: Get the following error message in web browser console: "The service worker navigation preload request was cancelled before \'preloadResponse\' settled. If you intend to use \'preloadResponse\', use waitUntil() or respondWith() to wait for the promise to settle."  What should I do now?</strong></p>
+		<p><strong>Answer:</strong> https://stackoverflow.com/questions/66818391/service-worker-the-service-worker-navigation-preload-request-failed-with-networ</p>';
 		}
 		elseif ( $this->tab == 'premium' )
 		{
