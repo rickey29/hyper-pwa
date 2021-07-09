@@ -5,7 +5,7 @@ Tags: progressive web apps, pwa, web app manifests, service worker, workbox
 Requires at least: 5.1
 Tested up to: 5.7.2
 Requires PHP: 7.2
-Stable tag: 1.14.0
+Stable tag: 1.14.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
