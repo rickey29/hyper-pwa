@@ -5,7 +5,7 @@ Tags: progressive web apps, pwa, web app manifests, service worker, workbox
 Requires at least: 5.1
 Tested up to: 5.7.2
 Requires PHP: 7.2
-Stable tag: 1.13.0
+Stable tag: 1.14.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,13 +14,21 @@ Convert WordPress into Progressive Web Apps style.
 == Description ==
 Hyper PWA plugin converts WordPress into Progressive Web Apps style.
 
-Features:
+Basic Features:
 * Based on WorkBox;
 * Pass Lighthouse PWA audit;
-* Background synchronize Google Analytics data when network is recovered;
 * Work compatible with AMP;
 * Display an offline page when network is not available;
-* Bypass WordPress Administration Dashboard for PWA.
+* Make PWA bypass WordPress Administration Dashboard.
+
+Premium Features:
+* Support Workbox Precaching;
+* Support Workbox Navigation Preload;
+* Support Workbox Strategies;
+* Support Workbox Common Recipes;
+* Support Workbox Advanced Recipes;
+* Support Workbox DefaultHandler Routing;
+* Support Workbox Google Analytics.
 
 == Highlight ==
 This plugin is relying on a 3rd party Software as a Service -- FlexPlat: https://flexplat.com to generate PWA Service Workers related files.  The Terms and Conditions is located at: https://flexplat.com/terms-and-conditions/
@@ -72,7 +80,8 @@ No.  You can use other plugins, such as OneSignal: https://wordpress.org/plugins
 
 = During Google Chrome Lighthouse PWA audit, I get following error message: "No matching service worker detected. You may need to reload the page, or check that the scope of the service worker for the current page encloses the scope and start URL from the manifest."  And in Chrome Console, I get following error message: "The script has an unsupported MIME type (\'text/html\')."  What should I do now? =
 
-Purge Cache -- If your website uses any cache plugin, purge the cache;  if your website uses any CDN/cache server, purge the cache.  Then, redo the audit.
+If your website uses any cache plugin, purge the cache.  If your website uses any CDN/cache server, purge the cache.  Go to your web browser Developer Tools, unregister Service Worker and clear cache.  Then redo the audit.
+If it is still not working, you must use some cache plugin.  Let your cache plugin not caching "https://yoursite/hyper-pwa-service-worker.js" -- set above link as an exception to the caching.  Go to your web browser Developer Tools, unregister Service Worker and clear cache.  Then redo the audit.
 
 = Get the following error message in web browser console: "The service worker navigation preload request was cancelled before 'preloadResponse' settled. If you intend to use 'preloadResponse', use waitUntil() or respondWith() to wait for the promise to settle." What should I do now? =
 
@@ -91,6 +100,10 @@ Price:
 All above items include a 30 days free trial.
 
 == Changelog ==
+
+= 1.14.0 =
+(Thur., Jul. 08, 2021)
+* New Feature: Support Workbox Background Sync.
 
 = 1.13.0 =
 (Mon., Jun. 28, 2021)

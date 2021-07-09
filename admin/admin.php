@@ -13,12 +13,16 @@ class HyperPWAAdmin
 	{
 		if ( empty( $_GET['tab'] ) )
 		{
-			$this->tab = 'settings';
+			$this->tab = 'basic';
 
 			return;
 		}
 
-		if ( $_GET['tab'] == 'faq' )
+		if ( $_GET['tab'] == 'advanced' )
+		{
+			$this->tab = 'advanced';
+		}
+		elseif ( $_GET['tab'] == 'faq' )
 		{
 			$this->tab = 'faq';
 		}
@@ -28,7 +32,7 @@ class HyperPWAAdmin
 		}
 		else
 		{
-			$this->tab = 'settings';
+			$this->tab = 'basic';
 		}
 	}
 
@@ -53,13 +57,14 @@ class HyperPWAAdmin
 
 		echo '
 	<nav class="nav-tab-wrapper">
-		<a href="?page=hyper-pwa" class="nav-tab' . ( ( $this->tab == 'settings' ) ? ' nav-tab-active' : '' ) . '">Settings</a>
+		<a href="?page=hyper-pwa" class="nav-tab' . ( ( $this->tab == 'basic' ) ? ' nav-tab-active' : '' ) . '">Basic</a>
+		<a href="?page=hyper-pwa&tab=advanced" class="nav-tab' . ( ( $this->tab == 'advanced' ) ? ' nav-tab-active' : '' ) . '">Advanced</a>
 		<a href="?page=hyper-pwa&tab=faq" class="nav-tab' . ( ( $this->tab == 'faq' ) ? ' nav-tab-active' : '' ) . '">FAQ</a>
 		<a href="?page=hyper-pwa&tab=premium" class="nav-tab' . ( ( $this->tab == 'premium' ) ? ' nav-tab-active' : '' ) . '">Premium</a>
 	</nav>
 	<div class="tab-content">';
 
-		if ( $this->tab == 'settings' )
+		if ( $this->tab == 'basic' )
 		{
 			echo '
 		<form method="POST" action="options.php">
@@ -72,6 +77,10 @@ class HyperPWAAdmin
 			echo '
 		</form>';
 		}
+		elseif ( $this->tab == 'advanced' )
+		{
+			echo '';
+		}
 		elseif ( $this->tab == 'faq' )
 		{
 			echo '
@@ -82,7 +91,7 @@ class HyperPWAAdmin
 		<p><strong>Question: Does this plugin support Push Notifications?</strong></p>
 		<p><strong>Answer:</strong> No.  You can use other plugins, such as OneSignal: https://wordpress.org/plugins/onesignal-free-web-push-notifications/</p>
 		<p><strong>Question: During Google Chrome Lighthouse PWA audit, I get the following error message: "No matching service worker detected. You may need to reload the page, or check that the scope of the service worker for the current page encloses the scope and start URL from the manifest."  And in Chrome Console, I get the following error message: "The script has an unsupported MIME type (\'text/html\')."  What should I do now?</strong></p>
-		<p><strong>Answer:</strong> Purge Cache -- If your website uses any cache plugin, purge the cache;  if your website uses any CDN/cache server, purge the cache.  Then refresh your web page to make sure the cache has the correct/updated content.  Finally redo the audit.</p>
+		<p><strong>Answer:</strong> If your website uses any cache plugin, purge the cache.  If your website uses any CDN/cache server, purge the cache.  Go to your web browser Developer Tools, unregister Service Worker and clear cache.  Then redo the audit.<br>If it is still not working, you must use some cache plugin.  Let your cache plugin not caching "https://yoursite/hyper-pwa-service-worker.js" -- set above link as an exception to the caching.  Go to your web browser Developer Tools, unregister Service Worker and clear cache.  Then redo the audit.</p>
 		<p><strong>Question: Get the following error message in web browser console: "The service worker navigation preload request was cancelled before \'preloadResponse\' settled. If you intend to use \'preloadResponse\', use waitUntil() or respondWith() to wait for the promise to settle."  What should I do now?</strong></p>
 		<p><strong>Answer:</strong> https://stackoverflow.com/questions/66818391/service-worker-the-service-worker-navigation-preload-request-failed-with-networ</p>';
 		}
